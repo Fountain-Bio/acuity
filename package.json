@@ -17,11 +17,18 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"typecheck": "tsc --noEmit",
-		"lint": "oxlint --type-aware",
-		"prepare": "bun run build"
+		"lint": "oxlint --type-aware && oxfmt --check",
+		"fmt": "oxfmt",
+		"prepare": "bun run build",
+		"release": "npm version",
+		"release:patch": "npm version patch",
+		"release:minor": "npm version minor",
+		"release:major": "npm version major",
+		"release:beta": "npm version prerelease --preid=beta"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",
+		"oxfmt": "^0.13.0",
 		"oxlint": "^1.28.0",
 		"oxlint-tsgolint": "^0.6.0",
 		"typescript": "^5"
