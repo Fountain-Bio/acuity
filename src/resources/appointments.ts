@@ -1,7 +1,8 @@
 import { HttpClient } from "../http";
 import type {
   Appointment,
-  AppointmentEmailOptions,
+  AppointmentActionOptions,
+  AppointmentRequestDefaults,
   CancelAppointmentPayload,
   CreateAppointmentOptions,
   CreateAppointmentPayload,
@@ -12,7 +13,10 @@ import type {
 } from "../types";
 
 export class AppointmentsResource {
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly defaults: AppointmentRequestDefaults = {},
+  ) {}
 
   list(params?: ListAppointmentsParams): Promise<Appointment[]> {
     return this.http.request<Appointment[], ListAppointmentsParams | undefined>(
@@ -34,10 +38,12 @@ export class AppointmentsResource {
     payload: CreateAppointmentPayload,
     options?: CreateAppointmentOptions,
   ): Promise<Appointment> {
-    return this.http.request<
-      Appointment,
-      CreateAppointmentOptions | undefined
-    >("POST", "/appointments", { query: options, body: payload });
+    const query = this.mergeQueryOptions(this.defaults.create, options);
+    return this.http.request<Appointment, CreateAppointmentOptions | undefined>(
+      "POST",
+      "/appointments",
+      { query, body: payload },
+    );
   }
 
   update(id: number, payload: UpdateAppointmentPayload): Promise<Appointment> {
@@ -49,28 +55,45 @@ export class AppointmentsResource {
   cancel(
     id: number,
     payload?: CancelAppointmentPayload,
-    options?: AppointmentEmailOptions,
+    options?: AppointmentActionOptions,
   ): Promise<Appointment> {
-    return this.http.request<
-      Appointment,
-      AppointmentEmailOptions | undefined
-    >("PUT", `/appointments/${id}/cancel`, {
-      query: options,
-      body: payload,
-    });
+    const query = this.mergeQueryOptions(this.defaults.cancel, options);
+    return this.http.request<Appointment, AppointmentActionOptions | undefined>(
+      "PUT",
+      `/appointments/${id}/cancel`,
+      {
+        query,
+        body: payload,
+      },
+    );
   }
 
   reschedule(
     id: number,
     payload: RescheduleAppointmentPayload,
-    options?: AppointmentEmailOptions,
+    options?: AppointmentActionOptions,
   ): Promise<Appointment> {
-    return this.http.request<
-      Appointment,
-      AppointmentEmailOptions | undefined
-    >("PUT", `/appointments/${id}/reschedule`, {
-      query: options,
-      body: payload,
-    });
+    const query = this.mergeQueryOptions(this.defaults.reschedule, options);
+    return this.http.request<Appointment, AppointmentActionOptions | undefined>(
+      "PUT",
+      `/appointments/${id}/reschedule`,
+      {
+        query,
+        body: payload,
+      },
+    );
+  }
+
+  private mergeQueryOptions<T extends object>(
+    defaults?: T,
+    overrides?: T,
+  ): T | undefined {
+    if (!defaults && !overrides) {
+      return undefined;
+    }
+    return {
+      ...defaults,
+      ...overrides,
+    } as T;
   }
 }

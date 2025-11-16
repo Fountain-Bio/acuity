@@ -15,6 +15,10 @@ export interface AcuityClientOptions {
    * Optional AbortController signal shared across requests.
    */
   signal?: AbortSignal;
+  /**
+   * Default appointment-related query flags applied to each request.
+   */
+  appointmentDefaults?: AppointmentRequestDefaults;
 }
 
 export type SortDirection = "asc" | "desc";
@@ -78,13 +82,18 @@ export interface GetAppointmentOptions {
   pastFormAnswers?: boolean;
 }
 
-export interface CreateAppointmentOptions {
-  admin?: boolean;
+export interface AppointmentQueryOptions {
   noEmail?: boolean;
+  admin?: boolean;
 }
 
-export interface AppointmentEmailOptions {
-  noEmail?: boolean;
+export type CreateAppointmentOptions = AppointmentQueryOptions;
+export type AppointmentActionOptions = AppointmentQueryOptions;
+
+export interface AppointmentRequestDefaults {
+  create?: CreateAppointmentOptions;
+  cancel?: AppointmentActionOptions;
+  reschedule?: AppointmentActionOptions;
 }
 
 export interface CreateAppointmentPayload {

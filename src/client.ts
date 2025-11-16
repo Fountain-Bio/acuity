@@ -11,7 +11,10 @@ export class Acuity {
 
   constructor(options: AcuityClientOptions) {
     this.http = new HttpClient(options);
-    this.appointments = new AppointmentsResource(this.http);
+    this.appointments = new AppointmentsResource(
+      this.http,
+      options.appointmentDefaults,
+    );
     this.availability = new AvailabilityResource(this.http);
   }
 }

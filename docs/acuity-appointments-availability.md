@@ -163,7 +163,7 @@ Cancel or mark a no-show.
 | `noShow` | Boolean to mark as no-show. |
 | `cancelNote` | Internal note explaining why it was canceled. |
 
-**Query parameters.** `noEmail=true` skips Acuity’s cancellation emails/SMS entirely so you can perform internal-only cancellations.
+**Query parameters.** `admin=true` forces the cancel to run with admin privileges (same semantics as other endpoints), and `noEmail=true` skips Acuity’s cancellation emails/SMS entirely so you can perform internal-only cancellations.
 
 #### Response
 
@@ -184,7 +184,7 @@ Move the appointment to a new time.
 | `datetime` | Required ISO datetime for the new slot. |
 | `calendarID` | Optional calendar override. |
 
-**Query parameters.** `noEmail=true` suppresses reschedule notices so you can shuffle a booking without notifying the client (pair this with internal outreach if needed).
+**Query parameters.** `admin=true` performs the reschedule with admin privileges, and `noEmail=true` suppresses reschedule notices so you can shuffle a booking without notifying the client (pair this with internal outreach if needed).
 
 #### Response
 
