@@ -78,6 +78,15 @@ export interface GetAppointmentOptions {
   pastFormAnswers?: boolean;
 }
 
+export interface CreateAppointmentOptions {
+  admin?: boolean;
+  noEmail?: boolean;
+}
+
+export interface AppointmentEmailOptions {
+  noEmail?: boolean;
+}
+
 export interface CreateAppointmentPayload {
   datetime: string;
   appointmentTypeID: number;
@@ -106,21 +115,16 @@ export type UpdateAppointmentPayload = Partial<
     | "fields"
     | "calendarID"
   >
-> & {
-  sendConfirmationEmail?: boolean;
-  sendRescheduleEmail?: boolean;
-};
+>;
 
 export interface CancelAppointmentPayload {
   noShow?: boolean;
   cancelNote?: string;
-  sendEmail?: boolean;
 }
 
 export interface RescheduleAppointmentPayload {
   datetime: string;
   calendarID?: number;
-  sendRescheduleEmail?: boolean;
 }
 
 export interface AvailabilityDatesParams {

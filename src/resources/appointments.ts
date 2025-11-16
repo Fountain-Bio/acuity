@@ -1,7 +1,9 @@
 import { HttpClient } from "../http";
 import type {
   Appointment,
+  AppointmentEmailOptions,
   CancelAppointmentPayload,
+  CreateAppointmentOptions,
   CreateAppointmentPayload,
   GetAppointmentOptions,
   ListAppointmentsParams,
@@ -30,14 +32,12 @@ export class AppointmentsResource {
 
   create(
     payload: CreateAppointmentPayload,
-    options?: { admin?: boolean },
+    options?: CreateAppointmentOptions,
   ): Promise<Appointment> {
-    const query = options?.admin ? { admin: true } : undefined;
-    return this.http.request<Appointment, { admin: boolean } | undefined>(
-      "POST",
-      "/appointments",
-      { query, body: payload },
-    );
+    return this.http.request<
+      Appointment,
+      CreateAppointmentOptions | undefined
+    >("POST", "/appointments", { query: options, body: payload });
   }
 
   update(id: number, payload: UpdateAppointmentPayload): Promise<Appointment> {
@@ -46,8 +46,16 @@ export class AppointmentsResource {
     });
   }
 
-  cancel(id: number, payload?: CancelAppointmentPayload): Promise<Appointment> {
-    return this.http.request<Appointment>("PUT", `/appointments/${id}/cancel`, {
+  cancel(
+    id: number,
+    payload?: CancelAppointmentPayload,
+    options?: AppointmentEmailOptions,
+  ): Promise<Appointment> {
+    return this.http.request<
+      Appointment,
+      AppointmentEmailOptions | undefined
+    >("PUT", `/appointments/${id}/cancel`, {
+      query: options,
       body: payload,
     });
   }
@@ -55,11 +63,14 @@ export class AppointmentsResource {
   reschedule(
     id: number,
     payload: RescheduleAppointmentPayload,
+    options?: AppointmentEmailOptions,
   ): Promise<Appointment> {
-    return this.http.request<Appointment>(
-      "PUT",
-      `/appointments/${id}/reschedule`,
-      { body: payload },
-    );
+    return this.http.request<
+      Appointment,
+      AppointmentEmailOptions | undefined
+    >("PUT", `/appointments/${id}/reschedule`, {
+      query: options,
+      body: payload,
+    });
   }
 }

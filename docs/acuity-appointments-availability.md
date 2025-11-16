@@ -117,7 +117,7 @@ Create an appointment as a client booking. Supported JSON body keys:
 | `formID` | ✖ | Explicit intake form to attach. |
 | `smsOptIn` | ✖ | Whether the client opted into SMS reminders. |
 
-When double-booking protection blocks the slot, the API returns HTTP 422 with `time_unavailable`. For admin-side scheduling that can override certain restrictions, append `?admin=true` to the endpoint.
+When double-booking protection blocks the slot, the API returns HTTP 422 with `time_unavailable`. For admin-side scheduling that can override certain restrictions, append `?admin=true` to the endpoint. Append `?noEmail=true` whenever you need to suppress the confirmation email/SMS blast for this booking while still creating the appointment.
 
 #### Response
 
@@ -141,8 +141,6 @@ Update mutable fields for an existing appointment.
 | `firstName`, `lastName`, `email`, `phone`, `notes` | Update client and note fields. |
 | `fields` | Replace form answers array. |
 | `calendarID` | Move to a new calendar (same start time). |
-| `sendConfirmationEmail` | Boolean flag to send a confirmation. |
-| `sendRescheduleEmail` | Boolean flag to send a reschedule notice. |
 
 #### Response
 
@@ -164,7 +162,8 @@ Cancel or mark a no-show.
 | --- | --- |
 | `noShow` | Boolean to mark as no-show. |
 | `cancelNote` | Internal note explaining why it was canceled. |
-| `sendEmail` | Boolean, default `true`, send cancellation email to client. |
+
+**Query parameters.** `noEmail=true` skips Acuity’s cancellation emails/SMS entirely so you can perform internal-only cancellations.
 
 #### Response
 
@@ -184,7 +183,8 @@ Move the appointment to a new time.
 | --- | --- |
 | `datetime` | Required ISO datetime for the new slot. |
 | `calendarID` | Optional calendar override. |
-| `sendRescheduleEmail` | Boolean flag, defaults to `true`. |
+
+**Query parameters.** `noEmail=true` suppresses reschedule notices so you can shuffle a booking without notifying the client (pair this with internal outreach if needed).
 
 #### Response
 
