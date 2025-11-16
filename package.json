@@ -1,0 +1,30 @@
+{
+	"name": "@fountain-bio/acuity-sdk",
+	"version": "0.0.1",
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"typecheck": "tsc --noEmit",
+		"lint": "oxlint --type-aware",
+		"prepare": "bun run build"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"oxlint": "^1.28.0",
+		"oxlint-tsgolint": "^0.6.0",
+		"typescript": "^5"
+	},
+	"peerDependencies": {}
+}
