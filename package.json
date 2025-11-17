@@ -1,5 +1,5 @@
 {
-	"name": "@fountain-bio/acuity-sdk",
+	"name": "@fountain-bio/acuity",
 	"version": "0.0.1",
 	"type": "module",
 	"main": "./dist/index.js",
