@@ -1,19 +1,22 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
-	"plugins": ["import", "typescript", "unicorn"],
+	"plugins": ["import", "typescript", "unicorn", "oxc"],
 	"env": {
-		"browser": true
+		"node": true
 	},
-	"globals": {
-		"foo": "readonly"
+	"categories": {
+		"correctness": "error",
+		"suspicious": "warn",
+		"nursery": "warn"
 	},
-	"settings": {},
-	"rules": {},
+	"rules": {
+		"typescript/no-explicit-any": "error"
+	},
 	"overrides": [
 		{
 			"files": ["*.test.ts", "*.spec.ts"],
 			"rules": {
-				"@typescript-eslint/no-explicit-any": "off"
+				"typescript/no-explicit-any": "off"
 			}
 		}
 	]

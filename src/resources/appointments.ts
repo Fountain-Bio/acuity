@@ -96,6 +96,7 @@ export class AppointmentsResource {
     if (!defaults && !overrides) {
       return undefined;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     return {
       ...defaults,
       ...overrides,

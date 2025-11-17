@@ -62,6 +62,7 @@ export class HttpClient {
       throw new AcuityNetworkError({
         status: 0,
         code: "network_error",
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         message: (error as Error).message,
         payload: error,
       });
@@ -72,6 +73,7 @@ export class HttpClient {
       throw this.createError(response.status, payload);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     return payload as T;
   }
 
@@ -80,6 +82,7 @@ export class HttpClient {
     const url = new URL(normalizedPath, this.baseUrl);
     if (query) {
       for (const [key, value] of Object.entries(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         query as Record<string, unknown>,
       )) {
         if (value === undefined || value === null) continue;
