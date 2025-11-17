@@ -204,3 +204,16 @@ export interface CheckTimesResponse {
   message?: string;
   [key: string]: unknown;
 }
+
+export interface Calendar {
+  id: number;
+  name: string;
+  timezone: string;
+  email?: string | null;
+  replyTo?: string | null;
+  description?: string | null;
+  location?: string | null;
+  image?: string | null;
+  thumbnail?: string | null;
+  [key: string]: unknown;
+}

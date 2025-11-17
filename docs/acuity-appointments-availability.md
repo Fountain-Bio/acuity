@@ -302,3 +302,34 @@ Returns a single slot verification object:
 - `404 not_found` – typoed endpoint. (Source: https://developers.acuityscheduling.com/reference/api-errors)
 - `422 invalid_data` – slot fails validation; response body keeps HTTP 200 but sets `available:false` with a `message` describing why (e.g., `time_unavailable`). (Source: https://developers.acuityscheduling.com/reference/availability-check-times)
 - `429 too_many_requests` – throttle/backoff. (Source: https://developers.acuityscheduling.com/reference/api-errors)
+
+## Calendars
+
+Calendars encapsulate the staff/resource schedule metadata that `calendarID` references across appointments and availability calls.
+
+### `GET /calendars`
+
+Returns every calendar the authenticated user can access. There are no query parameters—just send the standard Basic Auth headers and receive the full list for local caching. (Source: https://developers.acuityscheduling.com/reference/get-calendars)
+
+#### Response
+
+Array of calendar objects:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | integer | Identifier used as `calendarID` elsewhere in the API. |
+| `name` | string | Human-readable calendar label shown to clients. |
+| `timezone` | string | IANA timezone tied to the calendar's availability window. |
+| `email` | string | Notification address used for confirmations. |
+| `replyTo` | string | Reply-To email configured for outbound client emails. |
+| `description` | string | Optional blurb shown on the booking page. |
+| `location` | string | Free-form location text for the appointment. |
+| `image` / `thumbnail` | string | CDN URLs for the calendar avatar displayed in client flows. |
+
+Additional account-specific metadata (color, scheduling URLs, form references, etc.) may appear as extra keys; treat unknown keys as pass-through values.
+
+#### Errors
+
+- `401 unauthorized` – Basic Auth missing/incorrect. (Source: https://developers.acuityscheduling.com/reference/get-calendars)
+- `403 forbidden` – attempting to read calendars that belong to another account. (Source: https://developers.acuityscheduling.com/reference/get-calendars)
+- `429 too_many_requests` – same 10 req/s limit as the rest of the API. (Source: https://developers.acuityscheduling.com/reference/api-errors)

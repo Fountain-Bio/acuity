@@ -31,7 +31,7 @@ export class HttpClient {
   constructor(options: AcuityClientOptions) {
     this.userId = String(options.userId);
     this.apiKey = options.apiKey;
-    this.baseUrl = options.baseUrl ?? DEFAULT_BASE_URL;
+    this.baseUrl = this.normalizeBaseUrl(options.baseUrl ?? DEFAULT_BASE_URL);
     this.defaultSignal = options.signal;
   }
 
@@ -76,7 +76,8 @@ export class HttpClient {
   }
 
   private createUrl(path: string, query?: object): string {
-    const url = new URL(path, this.baseUrl);
+    const normalizedPath = path.startsWith("/") ? path.slice(1) : path;
+    const url = new URL(normalizedPath, this.baseUrl);
     if (query) {
       for (const [key, value] of Object.entries(
         query as Record<string, unknown>,
@@ -156,5 +157,9 @@ export class HttpClient {
       default:
         return status >= 500 ? "server_error" : "unknown_error";
     }
+  }
+
+  private normalizeBaseUrl(baseUrl: string): string {
+    return baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
   }
 }
