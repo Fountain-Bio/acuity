@@ -3,6 +3,7 @@ import type {
   Appointment,
   AppointmentActionOptions,
   AppointmentRequestDefaults,
+  AppointmentType,
   CancelAppointmentPayload,
   CreateAppointmentOptions,
   CreateAppointmentPayload,
@@ -24,6 +25,10 @@ export class AppointmentsResource {
       "/appointments",
       { query: params },
     );
+  }
+
+  types(): Promise<AppointmentType[]> {
+    return this.http.request<AppointmentType[]>("GET", "/appointment-types");
   }
 
   get(id: number, options?: GetAppointmentOptions): Promise<Appointment> {

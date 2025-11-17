@@ -197,6 +197,29 @@ Returns the rescheduled appointment object reflecting the new `datetime` and `ca
 - `422 invalid_data` – new slot is unavailable or fails validation; payload contains `{"error":"invalid_data","message":"time_unavailable"}`. (Source: https://developers.acuityscheduling.com/reference/put-appointments-id-reschedule)
 - Standard `400/403/429` errors from the global list apply for malformed requests or forbidden cross-account access. (Source: https://developers.acuityscheduling.com/reference/api-errors)
 
+### `GET /appointment-types`
+
+Returns every appointment type configured in the account; there are no query parameters, so a simple `acuity.appointments.types()` call yields the full catalog. (Source: https://developers.acuityscheduling.com/reference/appointment-types)
+
+#### Response
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | integer | Unique appointment type ID. |
+| `active` | boolean | `false` indicates the type has been deleted or deactivated. |
+| `name` | string | Display name of the type. |
+| `description` | string | Long-form description (often `null`). |
+| `duration` | integer | Length of the appointment in minutes. |
+| `price` | string | Price quoted in the account’s currency. |
+| `category` | string | Category label. |
+| `color` | string | Hex color used in Acuity. |
+| `private` | boolean | `true` when the type is only visible to admins/direct links. |
+| `type` | string | One of `service`, `class`, or `series`. |
+| `classSize` | integer/null | For classes/series, the maximum capacity; `null` for services. |
+| `paddingAfter` | integer | Minutes of enforced padding after each booking. |
+| `paddingBefore` | integer | Minutes of enforced padding before each booking. |
+| `calendarIDs` | integer[] | IDs of calendars that offer the type. |
+
 ## Availability
 
 Recommended flow: fetch available dates, fetch times for a date, optionally validate via `check-times`, then call `POST /appointments`.

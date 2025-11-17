@@ -78,6 +78,26 @@ export interface Appointment {
   [key: string]: unknown;
 }
 
+export type AppointmentTypeKind = "service" | "class" | "series";
+
+export interface AppointmentType {
+  id: number;
+  active: boolean;
+  name: string;
+  description?: string | null;
+  duration: number;
+  price?: string | number | null;
+  category?: string | null;
+  color?: string | null;
+  private: boolean;
+  type: AppointmentTypeKind;
+  classSize: number | null;
+  paddingAfter?: number;
+  paddingBefore?: number;
+  calendarIDs: number[];
+  [key: string]: unknown;
+}
+
 export interface GetAppointmentOptions {
   pastFormAnswers?: boolean;
 }
