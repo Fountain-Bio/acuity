@@ -237,3 +237,27 @@ export interface Calendar {
   thumbnail?: string | null;
   [key: string]: unknown;
 }
+
+export type StaticWebhookAppointmentAction =
+  | "scheduled"
+  | "rescheduled"
+  | "canceled"
+  | "changed";
+
+export type StaticWebhookEventType =
+  `appointment.${StaticWebhookAppointmentAction}`;
+
+export interface StaticWebhookEvent {
+  scope: "appointment";
+  action: StaticWebhookAppointmentAction;
+  type: StaticWebhookEventType;
+  id: number;
+  calendarID: number | null;
+  appointmentTypeID: number | null;
+  payload: Record<string, string | undefined>;
+  rawBody: string;
+}
+
+export type StaticWebhookHandler = (
+  event: StaticWebhookEvent,
+) => void | Promise<void>;

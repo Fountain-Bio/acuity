@@ -356,3 +356,11 @@ Additional account-specific metadata (color, scheduling URLs, form references, e
 - `401 unauthorized` – Basic Auth missing/incorrect. (Source: https://developers.acuityscheduling.com/reference/get-calendars)
 - `403 forbidden` – attempting to read calendars that belong to another account. (Source: https://developers.acuityscheduling.com/reference/get-calendars)
 - `429 too_many_requests` – same 10 req/s limit as the rest of the API. (Source: https://developers.acuityscheduling.com/reference/api-errors)
+
+## Static Webhooks
+
+Static webhooks are configured under the Acuity dashboard and send `application/x-www-form-urlencoded` payloads that always include `action` plus identifiers such as `id`, `calendarID`, and `appointmentTypeID` for appointment-related events. (Source: https://developers.acuityscheduling.com/docs/webhooks#static-webhooks)
+
+- Supported `action` values for static webhooks are `scheduled`, `rescheduled`, `canceled`, and `changed` for appointments. (Source: https://developers.acuityscheduling.com/docs/webhooks#static-webhooks)
+- Each delivery contains an `X-Acuity-Signature` header with a Base64-encoded HMAC-SHA256 hash of the exact request body computed with your API key as the secret. Always compute the HMAC over the raw bytes before parsing and compare it to the header to reject tampered payloads. (Source: https://developers.acuityscheduling.com/docs/webhooks#verifying-webhooks)
+- The SDK now exposes `handleStaticWebhook`, `verifyStaticWebhookSignature`, and `parseStaticWebhookEvent` helpers that encapsulate this verification flow and surface typed appointment events for the supported actions. Hook up `handleStaticWebhook((event) => ...)` in your HTTP route to receive `appointment.*` events after the signature is validated, or call `parseStaticWebhookEvent(bodyText)` if you already captured the raw form body and verified it elsewhere. Order notifications remain out of scope.

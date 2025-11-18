@@ -112,3 +112,31 @@ export type AcuityErrorResponse = {
   message?: string;
   details?: unknown;
 };
+
+export type AcuityWebhookErrorCode =
+  | "signature_missing"
+  | "signature_mismatch"
+  | "invalid_payload";
+
+export interface AcuityWebhookErrorDetails {
+  code: AcuityWebhookErrorCode;
+  message?: string;
+  cause?: unknown;
+}
+
+const WEBHOOK_ERROR_MESSAGES: Record<AcuityWebhookErrorCode, string> = {
+  signature_missing: "Static webhook signature header is missing.",
+  signature_mismatch: "Static webhook signature verification failed.",
+  invalid_payload: "Static webhook payload is invalid.",
+};
+
+export class AcuityWebhookError extends Error {
+  public readonly code: AcuityWebhookErrorCode;
+
+  constructor({ code, message, cause }: AcuityWebhookErrorDetails) {
+    super(message ?? WEBHOOK_ERROR_MESSAGES[code], { cause });
+    this.name = "AcuityWebhookError";
+    this.code = code;
+    Error.captureStackTrace?.(this, this.constructor);
+  }
+}
