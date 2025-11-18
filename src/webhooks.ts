@@ -19,67 +19,30 @@ type HeaderGetter = {
 };
 
 export type StaticWebhookBody = string | ArrayBuffer | ArrayBufferView;
+export type StaticWebhookHeaders = HeaderBag;
 
-export interface StaticWebhookVerificationInput {
+export interface StaticWebhookFactoryOptions {
   /**
    * API key configured for the static webhook.
    */
   secret: string;
-  /**
-   * Raw `application/x-www-form-urlencoded` body as delivered by Acuity.
-   */
-  body: StaticWebhookBody;
-  /**
-   * Optional explicit signature extracted from the request.
-   */
-  signature?: string | null;
-  /**
-   * Entire header bag (Node, Fetch, or framework specific) if you prefer auto extraction.
-   */
-  headers?: HeaderBag;
   /**
    * Override the signature header name. Defaults to `x-acuity-signature`.
    */
   headerName?: string;
 }
 
-export type StaticWebhookHandleInput = StaticWebhookVerificationInput;
-
-export function verifyStaticWebhookSignature(
-  input: StaticWebhookVerificationInput,
-): boolean {
-  const secret = input.secret?.trim();
-  if (!secret) {
-    throw new AcuityWebhookError({
-      code: "invalid_payload",
-      message: "Static webhook verification requires a non-empty secret.",
-    });
-  }
-
-  const signature = resolveSignature(
-    input.signature,
-    input.headers,
-    input.headerName,
-  );
-
-  if (!signature) {
-    return false;
-  }
-
-  const bodyBytes = normalizeBody(input.body);
-  const expected = computeSignature(secret, bodyBytes);
-  return safeCompare(expected, signature);
-}
-
-export function parseStaticWebhookEvent(bodyText: string): StaticWebhookEvent {
-  return parseStaticWebhookEventFromText(bodyText);
-}
-
-export async function handleStaticWebhook(
+export type StaticWebhookHandlerFn = (
+  body: StaticWebhookBody,
+  headers: StaticWebhookHeaders | undefined,
   handler: StaticWebhookHandler,
-  input: StaticWebhookHandleInput,
-): Promise<StaticWebhookEvent> {
-  const secret = input.secret?.trim();
+  signature?: string | null,
+) => Promise<StaticWebhookEvent>;
+
+export function createStaticWebhookHandler(
+  options: StaticWebhookFactoryOptions,
+): StaticWebhookHandlerFn {
+  const secret = options.secret?.trim();
   if (!secret) {
     throw new AcuityWebhookError({
       code: "invalid_payload",
@@ -87,27 +50,42 @@ export async function handleStaticWebhook(
     });
   }
 
-  const headerName = input.headerName ?? DEFAULT_SIGNATURE_HEADER;
-  const signature =
-    resolveSignature(input.signature, input.headers, headerName) ?? null;
+  const headerName = options.headerName ?? DEFAULT_SIGNATURE_HEADER;
 
-  if (!signature) {
-    throw new AcuityWebhookError({
-      code: "signature_missing",
-      message: `Missing "${headerName}" header on static webhook request.`,
-    });
-  }
+  return async function handleStaticWebhook(
+    body: StaticWebhookBody,
+    headers: StaticWebhookHeaders | undefined,
+    handler: StaticWebhookHandler,
+    signature?: string | null,
+  ): Promise<StaticWebhookEvent> {
+    if (typeof handler !== "function") {
+      throw new AcuityWebhookError({
+        code: "invalid_payload",
+        message: "Static webhook handler function is required.",
+      });
+    }
 
-  const bodyBytes = normalizeBody(input.body);
-  const expected = computeSignature(secret, bodyBytes);
+    const resolvedSignature =
+      resolveSignature(signature, headers, headerName) ?? null;
 
-  if (!safeCompare(expected, signature)) {
-    throw new AcuityWebhookError({ code: "signature_mismatch" });
-  }
+    if (!resolvedSignature) {
+      throw new AcuityWebhookError({
+        code: "signature_missing",
+        message: `Missing "${headerName}" header on static webhook request.`,
+      });
+    }
 
-  const event = parseStaticWebhookEventFromText(decodeBody(bodyBytes));
-  await handler(event);
-  return event;
+    const bodyBytes = normalizeBody(body);
+    const expected = computeSignature(secret, bodyBytes);
+
+    if (!safeCompare(expected, resolvedSignature)) {
+      throw new AcuityWebhookError({ code: "signature_mismatch" });
+    }
+
+    const event = parseStaticWebhookEventFromText(decodeBody(bodyBytes));
+    await handler(event);
+    return event;
+  };
 }
 
 const APPOINTMENT_ACTIONS: readonly StaticWebhookAppointmentAction[] = [

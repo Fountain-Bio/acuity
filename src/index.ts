@@ -2,7 +2,9 @@ export { Acuity } from "./client";
 export * from "./errors";
 export * from "./types";
 export {
-  handleStaticWebhook,
-  parseStaticWebhookEvent,
-  verifyStaticWebhookSignature,
+  createStaticWebhookHandler,
+  type StaticWebhookBody,
+  type StaticWebhookFactoryOptions,
+  type StaticWebhookHandlerFn,
+  type StaticWebhookHeaders,
 } from "./webhooks";
