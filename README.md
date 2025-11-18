@@ -36,33 +36,30 @@ await acuity.appointments.create(payload, { admin: true });
 ## Handling static webhooks
 
 ```ts
-import { handleStaticWebhook } from "@fountain-bio/acuity-sdk";
+import { createStaticWebhookHandler } from "@fountain-bio/acuity-sdk";
+
+const handleWebhook = createStaticWebhookHandler({
+  secret: process.env.ACUITY_WEBHOOK_SECRET!,
+});
 
 export async function POST(req: Request) {
   const body = await req.text();
 
-  await handleStaticWebhook(
-    async (event) => {
-      switch (event.type) {
-        case "appointment.scheduled":
-          break;
-        case "appointment.rescheduled":
-          break;
-        case "appointment.canceled":
-          break;
-        case "appointment.changed":
-          break;
-      }
-    },
-    {
-      secret: process.env.ACUITY_WEBHOOK_SECRET!,
-      body,
-      headers: req.headers,
-    },
-  );
+  await handleWebhook(body, req.headers, async (event) => {
+    switch (event.type) {
+      case "appointment.scheduled":
+        break;
+      case "appointment.rescheduled":
+        break;
+      case "appointment.canceled":
+        break;
+      case "appointment.changed":
+        break;
+    }
+  });
 
   return new Response(null, { status: 204 });
 }
 ```
 
-`handleStaticWebhook` verifies the `x-acuity-signature` header with your static webhook API key, parses the form-encoded payload, and hands you strongly typed appointment events to branch on. Call `verifyStaticWebhookSignature` if you only need a boolean guard or `parseStaticWebhookEvent(bodyText)` when another layer already validated the signature and gave you the raw form body as a string. Dynamic webhooks (and order notifications) are intentionally left out for now.
+`createStaticWebhookHandler` binds the API key and signature header name once, returning a function you call per request with the raw body, headers, and your event handler. The helper verifies the `x-acuity-signature` header, parses the form-encoded payload, and surfaces typed appointment events for you to branch on. Dynamic webhooks (and order notifications) remain out of scope for now.
