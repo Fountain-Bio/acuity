@@ -18,12 +18,13 @@ type HeaderGetter = {
   get(name: string): string | null | undefined;
 };
 
-export type StaticWebhookBody = string | ArrayBuffer | ArrayBufferView;
-export type StaticWebhookHeaders = HeaderBag;
+export type WebhookBody = string | ArrayBuffer | ArrayBufferView;
+export type WebhookHeaders = HeaderBag;
 
-export interface StaticWebhookFactoryOptions {
+export interface WebhookFactoryOptions {
   /**
-   * API key configured for the static webhook.
+   * API key used to sign webhook requests (main admin for static hooks, or the
+   * authenticated user's key for dynamic hooks).
    */
   secret: string;
   /**
@@ -32,16 +33,16 @@ export interface StaticWebhookFactoryOptions {
   headerName?: string;
 }
 
-export type StaticWebhookHandlerFn = (
-  body: StaticWebhookBody,
-  headers: StaticWebhookHeaders | undefined,
+export type WebhookHandlerFn = (
+  body: WebhookBody,
+  headers: WebhookHeaders | undefined,
   handler: StaticWebhookHandler,
   signature?: string | null,
 ) => Promise<StaticWebhookEvent>;
 
-export function createStaticWebhookHandler(
-  options: StaticWebhookFactoryOptions,
-): StaticWebhookHandlerFn {
+export function createWebhookHandler(
+  options: WebhookFactoryOptions,
+): WebhookHandlerFn {
   const secret = options.secret?.trim();
   if (!secret) {
     throw new AcuityWebhookError({
@@ -52,9 +53,9 @@ export function createStaticWebhookHandler(
 
   const headerName = options.headerName ?? DEFAULT_SIGNATURE_HEADER;
 
-  return async function handleStaticWebhook(
-    body: StaticWebhookBody,
-    headers: StaticWebhookHeaders | undefined,
+  return async function handleWebhook(
+    body: WebhookBody,
+    headers: WebhookHeaders | undefined,
     handler: StaticWebhookHandler,
     signature?: string | null,
   ): Promise<StaticWebhookEvent> {
@@ -245,7 +246,7 @@ function isHeaderGetter(value: HeaderBag): value is HeaderGetter {
   return typeof candidate.get === "function";
 }
 
-function normalizeBody(body: StaticWebhookBody): Uint8Array {
+function normalizeBody(body: WebhookBody): Uint8Array {
   if (typeof body === "string") {
     return textEncoder.encode(body);
   }
@@ -279,3 +280,10 @@ function safeCompare(expected: string, actual: string): boolean {
 
   return timingSafeEqual(expectedBytes, actualBytes);
 }
+
+export type StaticWebhookBody = WebhookBody;
+export type StaticWebhookHeaders = WebhookHeaders;
+export interface StaticWebhookFactoryOptions extends WebhookFactoryOptions {}
+export type StaticWebhookHandlerFn = WebhookHandlerFn;
+
+export const createStaticWebhookHandler = createWebhookHandler;

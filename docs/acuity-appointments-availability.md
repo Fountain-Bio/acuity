@@ -46,7 +46,6 @@ Returns upcoming appointments for the authenticated account.
 | `canceled` | boolean | `true` => only canceled appointments. |
 | `showall` | boolean | `true` => canceled and scheduled. |
 | `direction` | asc/desc | Sort order (defaults to `asc`). |
-| `includePayments` | boolean | Embed payment data per appointment. |
 | `excludeForms` | boolean | Drop form answers. |
 | `timezone` | string | Force timezone on returned fields. |
 | `page` / `limit` | integer | Pagination (limit default 20, max 200). |
@@ -318,7 +317,7 @@ Returns a single slot verification object:
 | `firstName` / `lastName` / `email` / `phone` | string | Echoes any client details provided for validation (often `null`). |
 | `location` | string | Location tied to the appointment type, if any. |
 | `certificate` / `package` | object | Applied redemption artifacts; `null` when none supplied. |
-| `payments`, `addons`, `labels`, `forms` | arrays | Detailed metadata to reuse when posting the appointment. |
+| `addons`, `labels`, `forms` | arrays | Detailed metadata to reuse when posting the appointment. |
 
 #### Errors
 
@@ -365,4 +364,28 @@ Static webhooks are configured under the Acuity dashboard and send `application/
 
 - Supported `action` values for static webhooks are `scheduled`, `rescheduled`, `canceled`, and `changed` for appointments. (Source: https://developers.acuityscheduling.com/docs/webhooks#static-webhooks)
 - Each delivery contains an `X-Acuity-Signature` header with a Base64-encoded HMAC-SHA256 hash of the exact request body computed with your API key as the secret. Always compute the HMAC over the raw bytes before parsing and compare it to the header to reject tampered payloads. (Source: https://developers.acuityscheduling.com/docs/webhooks#verifying-webhooks)
-- The SDK now exposes `createStaticWebhookHandler`, which binds your static webhook secret and lets you call the returned function with `(body, headers, handler)` for each request. Signature verification, payload parsing, and typed `appointment.*` events all live behind this helper. Order notifications remain out of scope.
+- The SDK now exposes `createWebhookHandler` (also exported as `createStaticWebhookHandler`), which binds your webhook secret and lets you call the returned function with `(body, headers, handler)` for each request. Signature verification, payload parsing, and typed `appointment.*` events all live behind this helper. Dynamic webhooks handle the same appointment events but are configured via the REST helpers below.
+
+## Dynamic Webhooks
+
+Dynamic webhooks let you register callback URLs at runtime via the REST API so you can enable or disable subscriptions without touching the Acuity dashboard. Each subscription targets a single event and HTTP endpoint. (Source: https://developers.acuityscheduling.com/page/webhooks-webhooks-webhooks)
+
+### `POST /webhooks`
+
+Create a subscription by sending `event` plus the HTTPS `target` URL that should receive deliveries. Supported events mirror the static appointment notifications (`appointment.scheduled`, `appointment.rescheduled`, `appointment.canceled`, `appointment.changed`). The response echoes back the new webhook record with its numeric `id`, `event`, `target`, and `status` fields—no signing secret is returned, so rely on the API key that created the webhook when verifying requests. Acuity enforces a hard limit of 25 dynamic webhooks per account and returns `400` when the limit is exceeded. (Source: https://developers.acuityscheduling.com/page/webhooks-webhooks-webhooks)
+
+### `GET /webhooks`
+
+Returns all active subscriptions so you can audit which URLs are receiving events. Each object includes the `id`, `event`, `target`, and `status` fields so you can determine whether a hook is active before updating or deleting it. The API enforces a soft cap of 25 dynamic webhooks per account, so delete unused subscriptions before creating new ones. (Source: https://developers.acuityscheduling.com/page/webhooks-webhooks-webhooks)
+
+### `DELETE /webhooks/{id}`
+
+Removes the subscription with the supplied numeric `id` and returns `204 No Content` on success. Use this endpoint when rotating infrastructure or cleaning up hooks created for short-lived experiments. (Source: https://developers.acuityscheduling.com/page/webhooks-webhooks-webhooks)
+
+### Verifying deliveries
+
+Webhook notifications are signed with a Base64-encoded HMAC-SHA256 hash of the exact request body. For static webhooks the shared secret is the main admin’s API key, while dynamic webhooks use the API key belonging to the authenticated user that created the subscription. Compare the calculated signature to the `x-acuity-signature` header and reject the request if they differ. (Source: https://developers.acuityscheduling.com/page/webhooks-webhooks-webhooks)
+
+### SDK integration
+
+Call `acuity.webhooks.create({ event, target })` to register a hook, `acuity.webhooks.list()` to enumerate them, and `acuity.webhooks.delete(id)` to remove obsolete subscriptions. Provide the corresponding API key to `createWebhookHandler` so both static and dynamic deliveries share the same validation helper. (Source: https://developers.acuityscheduling.com/page/webhooks-webhooks-webhooks)

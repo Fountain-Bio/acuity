@@ -13,7 +13,7 @@ import {
   AcuityValidationError,
 } from "./errors";
 
-type HttpMethod = "GET" | "POST" | "PUT";
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 export interface RequestOptions<Q extends object | undefined = undefined> {
   query?: Q;

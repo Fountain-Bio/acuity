@@ -16,7 +16,8 @@ export interface AcuityClientOptions {
    */
   requestTimeoutMs?: number;
   /**
-   * Default appointment-related query flags applied to each request.
+   * Default appointment mutation flags (e.g. `noEmail`, `admin`) that are
+   * merged into create/cancel/reschedule requests unless overridden per call.
    */
   appointmentDefaults?: AppointmentRequestDefaults;
 }
@@ -36,7 +37,9 @@ export interface ListAppointmentsParams {
   canceled?: boolean;
   showall?: boolean;
   direction?: SortDirection;
-  includePayments?: boolean;
+  /**
+   * Strip form answers from each appointment to reduce payload size.
+   */
   excludeForms?: boolean;
   timezone?: string;
   page?: number;
@@ -103,16 +106,35 @@ export interface GetAppointmentOptions {
 }
 
 export interface AppointmentQueryOptions {
+  /**
+   * Suppress Acuity's transactional emails for the mutation being performed.
+   */
   noEmail?: boolean;
+  /**
+   * Execute the request with admin-level privileges, overriding client-facing restrictions.
+   */
   admin?: boolean;
 }
 
 export type CreateAppointmentOptions = AppointmentQueryOptions;
 export type AppointmentActionOptions = AppointmentQueryOptions;
 
+/**
+ * Default query parameters that are automatically merged into the appointment mutation helpers.
+ * Useful for consistently applying flags such as `admin=true` or `noEmail=true` without repeating them.
+ */
 export interface AppointmentRequestDefaults {
+  /**
+   * Baseline query overrides applied to `appointments.create` (e.g., always book as admin and/or suppress emails).
+   */
   create?: CreateAppointmentOptions;
+  /**
+   * Baseline query overrides applied to `appointments.cancel` (e.g., skip client email notifications).
+   */
   cancel?: AppointmentActionOptions;
+  /**
+   * Baseline query overrides applied to `appointments.reschedule`, such as forcing admin privileges or muting client notifications.
+   */
   reschedule?: AppointmentActionOptions;
 }
 
@@ -157,9 +179,21 @@ export interface RescheduleAppointmentPayload {
 }
 
 export interface AvailabilityDatesParams {
+  /**
+   * Month to inspect, formatted as `YYYY-MM` (e.g., `"2025-01"`).
+   */
   month: string;
+  /**
+   * Appointment type whose availability should be evaluated.
+   */
   appointmentTypeID: number;
+  /**
+   * Optional calendar filter; omit to aggregate across all calendars.
+   */
   calendarID?: number;
+  /**
+   * IANA timezone identifier (e.g., `America/New_York`) for the response payload.
+   */
   timezone?: string;
 }
 
@@ -169,9 +203,21 @@ export interface AvailabilityDate {
 }
 
 export interface AvailabilityTimesParams {
+  /**
+   * Date to evaluate, formatted as `YYYY-MM-DD`.
+   */
   date: string;
+  /**
+   * Appointment type whose availability should be evaluated for the date.
+   */
   appointmentTypeID: number;
+  /**
+   * Optional calendar filter; omit to include all calendars that offer the slot.
+   */
   calendarID?: number;
+  /**
+   * IANA timezone identifier (e.g., `America/New_York`) applied to display fields.
+   */
   timezone?: string;
 }
 
@@ -217,7 +263,6 @@ export interface CheckTimesResponse {
   location?: string | null;
   certificate?: Record<string, unknown> | null;
   package?: Record<string, unknown> | null;
-  payments?: unknown[];
   addons?: unknown[];
   labels?: unknown[];
   forms?: unknown[];
@@ -261,3 +306,20 @@ export interface StaticWebhookEvent {
 export type StaticWebhookHandler = (
   event: StaticWebhookEvent,
 ) => void | Promise<void>;
+
+export type DynamicWebhookEvent = StaticWebhookEventType;
+
+export type DynamicWebhookStatus = "active" | "disabled";
+
+export interface CreateWebhookSubscriptionPayload {
+  event: DynamicWebhookEvent;
+  target: string;
+}
+
+export interface WebhookSubscription {
+  id: number;
+  event: DynamicWebhookEvent;
+  target: string;
+  status: DynamicWebhookStatus;
+  [key: string]: unknown;
+}
