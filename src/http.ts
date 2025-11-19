@@ -9,6 +9,7 @@ import {
   AcuityNotFoundError,
   AcuityRateLimitError,
   AcuityServerError,
+  AcuityTimeoutError,
   AcuityValidationError,
 } from "./errors";
 
@@ -17,7 +18,6 @@ type HttpMethod = "GET" | "POST" | "PUT";
 export interface RequestOptions<Q extends object | undefined = undefined> {
   query?: Q;
   body?: unknown;
-  signal?: AbortSignal;
 }
 
 const DEFAULT_BASE_URL = "https://acuityscheduling.com/api/v1";
@@ -26,13 +26,13 @@ export class HttpClient {
   private readonly userId: string;
   private readonly apiKey: string;
   private readonly baseUrl: string;
-  private readonly defaultSignal?: AbortSignal;
+  private readonly timeoutMs?: number;
 
   constructor(options: AcuityClientOptions) {
     this.userId = String(options.userId);
     this.apiKey = options.apiKey;
     this.baseUrl = this.normalizeBaseUrl(options.baseUrl ?? DEFAULT_BASE_URL);
-    this.defaultSignal = options.signal;
+    this.timeoutMs = options.requestTimeoutMs;
   }
 
   async request<T, Q extends object | undefined = undefined>(
@@ -47,7 +47,7 @@ export class HttpClient {
     const init: RequestInit = {
       method,
       headers,
-      signal: options?.signal ?? this.defaultSignal,
+      signal: this.createTimeoutSignal(),
     };
 
     if (options?.body !== undefined) {
@@ -59,6 +59,15 @@ export class HttpClient {
     try {
       response = await fetch(url, init);
     } catch (error) {
+      if (this.timeoutMs !== undefined && this.isAbortError(error)) {
+        throw new AcuityTimeoutError({
+          status: 0,
+          code: "timeout",
+          message: `Acuity request timed out after ${this.timeoutMs}ms`,
+          payload: error,
+        });
+      }
+
       throw new AcuityNetworkError({
         status: 0,
         code: "network_error",
@@ -164,5 +173,27 @@ export class HttpClient {
 
   private normalizeBaseUrl(baseUrl: string): string {
     return baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  }
+
+  private createTimeoutSignal(): AbortSignal | undefined {
+    if (this.timeoutMs === undefined) {
+      return undefined;
+    }
+    return AbortSignal.timeout(this.timeoutMs);
+  }
+
+  private isAbortError(error: unknown): boolean {
+    if (!(error instanceof Error)) {
+      return false;
+    }
+    if (error.name === "AbortError") {
+      return true;
+    }
+    // Some runtimes use an error code instead of the class name.
+    if ("code" in error) {
+      const code = (error as { code?: unknown }).code;
+      return code === "ABORT_ERR";
+    }
+    return false;
   }
 }

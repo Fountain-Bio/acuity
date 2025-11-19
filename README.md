@@ -22,6 +22,7 @@ import { Acuity } from "@fountain-bio/acuity-sdk";
 const acuity = new Acuity({
   userId: process.env.ACUITY_USER_ID!,
   apiKey: process.env.ACUITY_API_KEY!,
+  requestTimeoutMs: 10_000,
   appointmentDefaults: {
     create: { admin: true, noEmail: true },
     cancel: { admin: true, noEmail: true },
@@ -32,6 +33,8 @@ const acuity = new Acuity({
 // Per-call options still override the defaults:
 await acuity.appointments.create(payload, { admin: true });
 ```
+
+`requestTimeoutMs` is optional; when provided the SDK will automatically cancel calls that exceed the threshold. Timed-out requests throw `AcuityTimeoutError`, letting you distinguish them from other network failures.
 
 ## Handling static webhooks
 

@@ -105,6 +105,18 @@ export class AcuityNetworkError extends AcuityError {
   }
 }
 
+export class AcuityTimeoutError extends AcuityError {
+  constructor(details: AcuityErrorDetails) {
+    super({
+      ...details,
+      message:
+        details.message ??
+        "Acuity request timed out. Consider increasing the timeout threshold.",
+    });
+    this.name = "AcuityTimeoutError";
+  }
+}
+
 export type AcuityErrorResponse = {
   status_code?: number;
   status?: number;

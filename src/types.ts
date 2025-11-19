@@ -12,9 +12,9 @@ export interface AcuityClientOptions {
    */
   baseUrl?: string;
   /**
-   * Optional AbortController signal shared across requests.
+   * Optional timeout applied to every HTTP request (milliseconds).
    */
-  signal?: AbortSignal;
+  requestTimeoutMs?: number;
   /**
    * Default appointment-related query flags applied to each request.
    */

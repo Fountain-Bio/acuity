@@ -26,6 +26,8 @@ Core status codes to plan around:
 
 Unless a path documents additional behaviors, assume these statuses plus descriptive `error`/`message` pairs.
 
+SDK note: configuring `requestTimeoutMs` on the `Acuity` client enforces a per-request timeout. When Acuity does not respond before that threshold, the client throws `AcuityTimeoutError` (status `0`, code `timeout`) so you can differentiate timeouts from API or transport failures.
+
 ## Appointments
 
 ### `GET /appointments`
