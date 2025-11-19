@@ -1,6 +1,6 @@
 {
 	"name": "@fountain-bio/acuity",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"type": "module",
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
