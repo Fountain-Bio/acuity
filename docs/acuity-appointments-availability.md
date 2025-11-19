@@ -238,7 +238,7 @@ Returns dates with at least one open slot.
 
 #### Response
 
-Array of `{ date: "YYYY-MM-DD", slots: number }` objects where `slots` represents the number of active start times on that date.
+Returns an array of lightweight objects containing only a `date` key (e.g., `{ "date": "2016-02-04" }`). Every entry represents a day within the month that still exposes at least one bookable time.
 
 #### Errors
 
@@ -259,23 +259,19 @@ Returns precise start times for a date.
 | `calendarID` | ✖ | Restrict to a calendar. |
 | `timezone` | ✖ | Force timezone for readability. |
 
-Each item contains `time`, `slots` (how many clients can book that slot), and `readableTime`.
+Each returned slot object only exposes a `time` field in ISO 8601 format (with the timezone offset baked in). Use `/availability/check-times` when you need metadata such as timezone labels, calendar names, or pricing.
 
 #### Response
 
-Array of slot objects:
+Example payload:
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `time` | ISO 8601 string | Canonical timestamp for the slot. |
-| `slots` | integer | Number of clients that can start at this time. |
-| `type` | string | Appointment type name for context. |
-| `appointmentTypeID` | integer | Appointment type id. |
-| `price` | string | Price quoted for the slot. |
-| `calendar` / `calendarID` | string / integer | Calendar name and id tied to the slot. |
-| `isDefaultCalendar` | boolean | Whether the slot belongs to the account's default calendar. |
-| `timezone` | string | IANA timezone for display. |
-| `readableTime` | string | Human-friendly time such as `9:00am`. |
+```json
+[
+  { "time": "2016-02-04T13:00:00-0800" },
+  { "time": "2016-02-04T14:00:00-0800" },
+  { "time": "2016-02-04T15:00:00-0800" }
+]
+```
 
 #### Errors
 

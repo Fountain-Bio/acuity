@@ -78,7 +78,6 @@ export interface Appointment {
   package?: unknown;
   noShow?: boolean;
   canceled?: boolean;
-  [key: string]: unknown;
 }
 
 export type AppointmentTypeKind = "service" | "class" | "series";
@@ -98,7 +97,6 @@ export interface AppointmentType {
   paddingAfter?: number;
   paddingBefore?: number;
   calendarIDs: number[];
-  [key: string]: unknown;
 }
 
 export interface GetAppointmentOptions {
@@ -198,8 +196,17 @@ export interface AvailabilityDatesParams {
 }
 
 export interface AvailabilityDate {
+  /**
+   * ISO date string (YYYY-MM-DD) returned by `/availability/dates`.
+   */
   date: string;
-  slots: number;
+}
+
+export interface AvailabilityTimeSlot {
+  /**
+   * ISO timestamp (with timezone offset) for a specific bookable slot.
+   */
+  time: string;
 }
 
 export interface AvailabilityTimesParams {
@@ -219,20 +226,6 @@ export interface AvailabilityTimesParams {
    * IANA timezone identifier (e.g., `America/New_York`) applied to display fields.
    */
   timezone?: string;
-}
-
-export interface AvailabilityTimeSlot {
-  time: string;
-  slots: number;
-  type: string;
-  appointmentTypeID: number;
-  price?: string;
-  calendar?: string;
-  calendarID?: number;
-  isDefaultCalendar?: boolean;
-  timezone?: string;
-  readableTime?: string;
-  [key: string]: unknown;
 }
 
 export interface CheckTimesPayload {
@@ -267,7 +260,6 @@ export interface CheckTimesResponse {
   labels?: unknown[];
   forms?: unknown[];
   message?: string;
-  [key: string]: unknown;
 }
 
 export interface Calendar {
@@ -280,7 +272,6 @@ export interface Calendar {
   location?: string | null;
   image?: string | null;
   thumbnail?: string | null;
-  [key: string]: unknown;
 }
 
 export type StaticWebhookAppointmentAction =
@@ -321,5 +312,4 @@ export interface WebhookSubscription {
   event: DynamicWebhookEvent;
   target: string;
   status: DynamicWebhookStatus;
-  [key: string]: unknown;
 }
