@@ -112,13 +112,17 @@ async function main(): Promise<void> {
     .scriptName("acuity")
     .strict()
     .help()
-    .fail((msg, err) => {
-      if (msg) {
-        console.error(msg);
-      } else if (err instanceof Error) {
-        console.error(err.message);
+    .fail((msg, err, yargs) => {
+      const missingCommand = msg?.includes("Choose a subcommand to run.");
+      yargs.showHelp();
+      if (!missingCommand) {
+        if (msg) {
+          console.error(msg);
+        } else if (err instanceof Error) {
+          console.error(err.message);
+        }
       }
-      process.exit(1);
+      process.exit(missingCommand ? 0 : 1);
     })
     .demandCommand(1, "Choose a subcommand to run.")
     .option("user-id", {

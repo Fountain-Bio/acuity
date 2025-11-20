@@ -6,15 +6,7 @@ To install dependencies:
 bun install
 ```
 
-To run:
-
-```bash
-bun run src/index.ts
-```
-
-This project was created using `bun init` in bun v1.3.2. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
-
-## CLI (bunx)
+## CLI
 
 Every release publishes a small yargs-powered CLI so you can explore the API without writing code:
 
