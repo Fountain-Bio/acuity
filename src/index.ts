@@ -1,6 +1,6 @@
-export { Acuity } from "./client";
-export * from "./errors";
-export * from "./types";
+export { Acuity } from "./client.js";
+export * from "./errors.js";
+export * from "./types.js";
 export {
   createWebhookHandler,
   createStaticWebhookHandler,
@@ -12,4 +12,4 @@ export {
   type StaticWebhookFactoryOptions,
   type StaticWebhookHandlerFn,
   type StaticWebhookHeaders,
-} from "./webhooks";
+} from "./webhooks.js";

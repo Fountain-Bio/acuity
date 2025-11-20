@@ -21,3 +21,7 @@ Commits observed in history use short, imperative subjects (“add release workf
 
 ## Security & Configuration Tips
 Authenticate via `AcuityClientOptions` (`src/types.ts`) using Basic Auth credentials; load them from `.env` or CI secrets, never from the repo. Review `baseUrl` overrides before merging to avoid accidentally pointing to staging endpoints in releases.
+
+## Permissions
+
+When you are running in the sandbox and dont have permissions to use a tool, request permissions

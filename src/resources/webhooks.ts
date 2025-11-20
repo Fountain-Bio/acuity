@@ -1,8 +1,8 @@
-import { HttpClient } from "../http";
+import { HttpClient } from "../http.js";
 import type {
   CreateWebhookSubscriptionPayload,
   WebhookSubscription,
-} from "../types";
+} from "../types.js";
 
 export class WebhooksResource {
   constructor(private readonly http: HttpClient) {}

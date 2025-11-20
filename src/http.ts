@@ -1,4 +1,4 @@
-import { type AcuityClientOptions } from "./types";
+import { type AcuityClientOptions } from "./types.js";
 import {
   AcuityAuthError,
   AcuityConflictError,
@@ -11,7 +11,7 @@ import {
   AcuityServerError,
   AcuityTimeoutError,
   AcuityValidationError,
-} from "./errors";
+} from "./errors.js";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 

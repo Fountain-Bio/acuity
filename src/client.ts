@@ -1,9 +1,9 @@
-import { HttpClient } from "./http";
-import { AppointmentsResource } from "./resources/appointments";
-import { AvailabilityResource } from "./resources/availability";
-import { CalendarsResource } from "./resources/calendars";
-import { WebhooksResource } from "./resources/webhooks";
-import { type AcuityClientOptions } from "./types";
+import { HttpClient } from "./http.js";
+import { AppointmentsResource } from "./resources/appointments.js";
+import { AvailabilityResource } from "./resources/availability.js";
+import { CalendarsResource } from "./resources/calendars.js";
+import { WebhooksResource } from "./resources/webhooks.js";
+import { type AcuityClientOptions } from "./types.js";
 
 export class Acuity {
   public readonly appointments: AppointmentsResource;

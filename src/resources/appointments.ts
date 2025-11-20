@@ -1,4 +1,4 @@
-import { HttpClient } from "../http";
+import { HttpClient } from "../http.js";
 import type {
   Appointment,
   AppointmentActionOptions,
@@ -11,7 +11,7 @@ import type {
   ListAppointmentsParams,
   RescheduleAppointmentPayload,
   UpdateAppointmentPayload,
-} from "../types";
+} from "../types.js";
 
 export class AppointmentsResource {
   /**

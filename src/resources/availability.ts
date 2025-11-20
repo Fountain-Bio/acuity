@@ -1,4 +1,4 @@
-import { HttpClient } from "../http";
+import { HttpClient } from "../http.js";
 import type {
   AvailabilityDate,
   AvailabilityDatesParams,
@@ -6,7 +6,7 @@ import type {
   AvailabilityTimesParams,
   CheckTimesPayload,
   CheckTimesResponse,
-} from "../types";
+} from "../types.js";
 
 export class AvailabilityResource {
   /**

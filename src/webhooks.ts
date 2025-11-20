@@ -1,12 +1,12 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-import { AcuityWebhookError } from "./errors";
+import { AcuityWebhookError } from "./errors.js";
 import type {
   StaticWebhookAppointmentAction,
   StaticWebhookEventType,
   StaticWebhookEvent,
   StaticWebhookHandler,
-} from "./types";
+} from "./types.js";
 
 const DEFAULT_SIGNATURE_HEADER = "x-acuity-signature";
 const textEncoder = new TextEncoder();

@@ -11,6 +11,10 @@
 			"types": "./dist/index.d.ts"
 		}
 	},
+	"bin": {
+		"acuity": "./dist/cli.js",
+		"@fountain-bio/acuity": "./dist/cli.js"
+	},
 	"files": [
 		"dist"
 	],
@@ -19,15 +23,18 @@
 		"typecheck": "tsc --noEmit",
 		"lint": "oxlint --type-aware && oxfmt --check",
 		"fmt": "oxfmt",
-		"prepare": "bun run build",
 		"release": "npm version",
 		"release:patch": "npm version patch",
 		"release:minor": "npm version minor",
 		"release:major": "npm version major",
 		"release:beta": "npm version prerelease --preid=beta"
 	},
+	"dependencies": {
+		"yargs": "^18.0.0"
+	},
 	"devDependencies": {
 		"@types/bun": "latest",
+		"@types/yargs": "^17.0.35",
 		"oxfmt": "^0.14.0",
 		"oxlint": "^1.29.0",
 		"oxlint-tsgolint": "^0.7.1",

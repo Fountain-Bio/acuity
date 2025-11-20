@@ -1,5 +1,5 @@
-import { HttpClient } from "../http";
-import type { Calendar } from "../types";
+import { HttpClient } from "../http.js";
+import type { Calendar } from "../types.js";
 
 export class CalendarsResource {
   constructor(private readonly http: HttpClient) {}

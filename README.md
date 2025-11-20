@@ -14,6 +14,19 @@ bun run src/index.ts
 
 This project was created using `bun init` in bun v1.3.2. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
 
+## CLI (bunx)
+
+Every release publishes a small yargs-powered CLI so you can explore the API without writing code:
+
+```bash
+bunx @fountain-bio/acuity appointments list \
+  --user-id $ACUITY_USER_ID \
+  --api-key $ACUITY_API_KEY \
+  --max 5
+```
+
+Flags mirror the SDK types: `appointments list/get/types`, `availability dates/times/check`, and `calendars list`. Credentials default from `ACUITY_USER_ID` / `ACUITY_API_KEY`; optional `ACUITY_BASE_URL` and `ACUITY_TIMEOUT_MS` are also respected. Pass `--compact` to emit single-line JSON.
+
 ## Usage
 
 ```ts

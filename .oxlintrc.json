@@ -10,7 +10,16 @@
 		"nursery": "warn"
 	},
 	"rules": {
-		"typescript/no-explicit-any": "error"
+		"typescript/no-explicit-any": "error",
+		"import/extensions": [
+			"error",
+			"always",
+			{
+				"js": "always",
+				"ts": "never",
+				"tsx": "never"
+			}
+		]
 	},
 	"overrides": [
 		{
