@@ -1,5 +1,10 @@
 import { type AcuityClientOptions } from "./types.js";
 import {
+  AppointmentErrorCode,
+  CancelAppointmentErrorCode,
+  RescheduleAppointmentErrorCode,
+  AcuityErrorCode,
+  type KnownAcuityErrorCode,
   AcuityAuthError,
   AcuityConflictError,
   AcuityError,
@@ -62,7 +67,7 @@ export class HttpClient {
       if (this.timeoutMs !== undefined && this.isAbortError(error)) {
         throw new AcuityTimeoutError({
           status: 0,
-          code: "timeout",
+          code: AcuityErrorCode.Timeout,
           message: `Acuity request timed out after ${this.timeoutMs}ms`,
           payload: error,
         });
@@ -70,7 +75,7 @@ export class HttpClient {
 
       throw new AcuityNetworkError({
         status: 0,
-        code: "network_error",
+        code: AcuityErrorCode.Network,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         message: (error as Error).message,
         payload: error,
@@ -133,7 +138,8 @@ export class HttpClient {
 
   private createError(status: number, payload: unknown): AcuityError {
     const normalized = (payload ?? {}) as AcuityErrorResponse;
-    const code = normalized.error ?? this.mapStatusToCode(status);
+    const code =
+      this.normalizeErrorCode(normalized.error) ?? this.mapStatusToCode(status);
     const message = normalized.message;
     const details = { status, code, message, payload };
 
@@ -148,26 +154,35 @@ export class HttpClient {
     return new AcuityError(details);
   }
 
-  private mapStatusToCode(status: number): string {
+  private normalizeErrorCode(raw?: string): KnownAcuityErrorCode | undefined {
+    if (isKnownErrorCode(raw)) {
+      return raw;
+    }
+    return undefined;
+  }
+
+  private mapStatusToCode(status: number): AcuityErrorCode {
     switch (status) {
       case 400:
-        return "bad_request";
+        return AcuityErrorCode.BadRequest;
       case 401:
-        return "unauthorized";
+        return AcuityErrorCode.Unauthorized;
       case 403:
-        return "forbidden";
+        return AcuityErrorCode.Forbidden;
       case 404:
-        return "not_found";
+        return AcuityErrorCode.NotFound;
       case 405:
-        return "method_not_allowed";
+        return AcuityErrorCode.MethodNotAllowed;
       case 409:
-        return "conflict";
+        return AcuityErrorCode.Conflict;
       case 422:
-        return "invalid_data";
+        return AcuityErrorCode.InvalidData;
       case 429:
-        return "too_many_requests";
+        return AcuityErrorCode.TooManyRequests;
       default:
-        return status >= 500 ? "server_error" : "unknown_error";
+        return status >= 500
+          ? AcuityErrorCode.ServerError
+          : AcuityErrorCode.UnknownError;
     }
   }
 
@@ -196,4 +211,15 @@ export class HttpClient {
     }
     return false;
   }
+}
+
+const KNOWN_ERROR_CODE_VALUES = new Set<string>([
+  ...(Object.values(AcuityErrorCode) as string[]),
+  ...(Object.values(AppointmentErrorCode) as string[]),
+  ...(Object.values(CancelAppointmentErrorCode) as string[]),
+  ...(Object.values(RescheduleAppointmentErrorCode) as string[]),
+]);
+
+function isKnownErrorCode(value: unknown): value is KnownAcuityErrorCode {
+  return typeof value === "string" && KNOWN_ERROR_CODE_VALUES.has(value);
 }

@@ -47,7 +47,7 @@ export function createWebhookHandler(
   if (!secret) {
     throw new AcuityWebhookError({
       code: "invalid_payload",
-      message: "Static webhook secret is required to verify requests.",
+      message: "Webhook secret is required to verify requests.",
     });
   }
 
@@ -118,14 +118,14 @@ function parseWebhookEventFromText(bodyText: string): WebhookEvent {
   if (!actionValue) {
     throw new AcuityWebhookError({
       code: "invalid_payload",
-      message: 'Static webhook payload is missing "action".',
+      message: 'Webhook payload is missing "action".',
     });
   }
 
   if (!isAppointmentAction(actionValue)) {
     throw new AcuityWebhookError({
       code: "invalid_payload",
-      message: `Unsupported static webhook action "${actionValue}".`,
+      message: `Unsupported webhook action "${actionValue}".`,
     });
   }
 
@@ -169,7 +169,7 @@ function parseNumeric(
     if (required) {
       throw new AcuityWebhookError({
         code: "invalid_payload",
-        message: `Static webhook payload is missing "${field}".`,
+        message: `Webhook payload is missing "${field}".`,
       });
     }
     return null;
@@ -180,7 +180,7 @@ function parseNumeric(
   if (Number.isNaN(parsed)) {
     throw new AcuityWebhookError({
       code: "invalid_payload",
-      message: `Static webhook payload field "${field}" must be numeric.`,
+      message: `Webhook payload field "${field}" must be numeric.`,
     });
   }
 
