@@ -136,13 +136,24 @@ export interface AppointmentRequestDefaults {
   reschedule?: AppointmentActionOptions;
 }
 
+/**
+ * Payload for `POST /appointments` / `appointments.create`.
+ * Mirrors Acuity's client booking fields; pass availability slots directly to avoid timezone drift.
+ */
 export interface CreateAppointmentPayload {
+  /**
+   * ISO 8601 datetime string in the business timezone (e.g., "2025-03-18T14:00:00-04:00").
+   * Prefer using the `time` value returned by `/availability/times`, which is already correctly offset.
+   */
   datetime: string;
   appointmentTypeID: number;
   firstName: string;
   lastName: string;
   email: string;
-  phone?: string;
+  /**
+   * Client phone number; required by Acuity when creating appointments.
+   */
+  phone: string;
   calendarID?: number;
   notes?: string;
   fields?: Array<{ fieldID: number; value: string | string[] }>;

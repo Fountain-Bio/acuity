@@ -110,7 +110,7 @@ Create an appointment as a client booking. Supported JSON body keys:
 | `appointmentTypeID` | ✔ | Appointment type to schedule. |
 | `firstName` / `lastName` | ✔ | Client name. |
 | `email` | ✔ | Client email. |
-| `phone` | ✖ | Client phone. |
+| `phone` | ✔ | Client phone number (API rejects payloads without it). |
 | `calendarID` | ✖ | Force placement on a specific calendar. |
 | `notes` | ✖ | Client notes. |
 | `fields` | ✖ | Array of `{fieldID, value}` form answers. |
