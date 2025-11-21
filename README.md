@@ -41,7 +41,7 @@ await acuity.appointments.create(payload, { admin: true });
 
 `requestTimeoutMs` is optional; when provided the SDK will automatically cancel calls that exceed the threshold. Timed-out requests throw `AcuityTimeoutError`, letting you distinguish them from other network failures.
 
-## Handling static webhooks
+## Handling webhooks
 
 ```ts
 import { createWebhookHandler } from "@fountain-bio/acuity-sdk";
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
 }
 ```
 
-`createWebhookHandler` (also exported as `createStaticWebhookHandler` for backwards compatibility) binds the API key and signature header name once, returning a function you call per request with the raw body, headers, and your event handler. The helper verifies the `x-acuity-signature` header, parses the form-encoded payload, and surfaces typed appointment events for you to branch on.
+`createWebhookHandler` binds the API key and signature header name once, returning a function you call per request with the raw body, headers, and your event handler. The helper verifies the `x-acuity-signature` header, parses the form-encoded payload, and surfaces typed appointment events for you to branch on.
 
 ## Managing dynamic webhooks
 

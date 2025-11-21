@@ -2,10 +2,10 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 
 import { AcuityWebhookError } from "./errors.js";
 import type {
-  StaticWebhookAppointmentAction,
-  StaticWebhookEventType,
-  StaticWebhookEvent,
-  StaticWebhookHandler,
+  WebhookAppointmentAction,
+  WebhookEventType,
+  WebhookEvent,
+  WebhookHandler,
 } from "./types.js";
 
 const DEFAULT_SIGNATURE_HEADER = "x-acuity-signature";
@@ -23,8 +23,8 @@ export type WebhookHeaders = HeaderBag;
 
 export interface WebhookFactoryOptions {
   /**
-   * API key used to sign webhook requests (main admin for static hooks, or the
-   * authenticated user's key for dynamic hooks).
+   * API key used to sign webhook requests (main admin for dashboard-configured
+   * hooks, or the authenticated user's key for API-created hooks).
    */
   secret: string;
   /**
@@ -36,9 +36,9 @@ export interface WebhookFactoryOptions {
 export type WebhookHandlerFn = (
   body: WebhookBody,
   headers: WebhookHeaders | undefined,
-  handler: StaticWebhookHandler,
+  handler: WebhookHandler,
   signature?: string | null,
-) => Promise<StaticWebhookEvent>;
+) => Promise<WebhookEvent>;
 
 export function createWebhookHandler(
   options: WebhookFactoryOptions,
@@ -56,13 +56,13 @@ export function createWebhookHandler(
   return async function handleWebhook(
     body: WebhookBody,
     headers: WebhookHeaders | undefined,
-    handler: StaticWebhookHandler,
+    handler: WebhookHandler,
     signature?: string | null,
-  ): Promise<StaticWebhookEvent> {
+  ): Promise<WebhookEvent> {
     if (typeof handler !== "function") {
       throw new AcuityWebhookError({
         code: "invalid_payload",
-        message: "Static webhook handler function is required.",
+        message: "Webhook handler function is required.",
       });
     }
 
@@ -72,7 +72,7 @@ export function createWebhookHandler(
     if (!resolvedSignature) {
       throw new AcuityWebhookError({
         code: "signature_missing",
-        message: `Missing "${headerName}" header on static webhook request.`,
+        message: `Missing "${headerName}" header on webhook request.`,
       });
     }
 
@@ -83,13 +83,13 @@ export function createWebhookHandler(
       throw new AcuityWebhookError({ code: "signature_mismatch" });
     }
 
-    const event = parseStaticWebhookEventFromText(decodeBody(bodyBytes));
+    const event = parseWebhookEventFromText(decodeBody(bodyBytes));
     await handler(event);
     return event;
   };
 }
 
-const APPOINTMENT_ACTIONS: readonly StaticWebhookAppointmentAction[] = [
+const APPOINTMENT_ACTIONS: readonly WebhookAppointmentAction[] = [
   "scheduled",
   "rescheduled",
   "canceled",
@@ -97,8 +97,8 @@ const APPOINTMENT_ACTIONS: readonly StaticWebhookAppointmentAction[] = [
 ];
 
 const APPOINTMENT_EVENT_TYPE_MAP: Record<
-  StaticWebhookAppointmentAction,
-  StaticWebhookEventType
+  WebhookAppointmentAction,
+  WebhookEventType
 > = {
   scheduled: "appointment.scheduled",
   rescheduled: "appointment.rescheduled",
@@ -106,7 +106,7 @@ const APPOINTMENT_EVENT_TYPE_MAP: Record<
   changed: "appointment.changed",
 };
 
-function parseStaticWebhookEventFromText(bodyText: string): StaticWebhookEvent {
+function parseWebhookEventFromText(bodyText: string): WebhookEvent {
   const params = new URLSearchParams(bodyText);
   const payload: Record<string, string | undefined> = {};
   params.forEach((value, key) => {
@@ -189,7 +189,7 @@ function parseNumeric(
 
 function isAppointmentAction(
   action: string,
-): action is StaticWebhookAppointmentAction {
+): action is WebhookAppointmentAction {
   return (APPOINTMENT_ACTIONS as readonly string[]).includes(action);
 }
 
@@ -259,7 +259,7 @@ function normalizeBody(body: WebhookBody): Uint8Array {
     return new Uint8Array(body.buffer, body.byteOffset, body.byteLength);
   }
 
-  throw new TypeError("Unsupported static webhook body type.");
+  throw new TypeError("Unsupported webhook body type.");
 }
 
 function decodeBody(bytes: Uint8Array): string {
@@ -280,10 +280,3 @@ function safeCompare(expected: string, actual: string): boolean {
 
   return timingSafeEqual(expectedBytes, actualBytes);
 }
-
-export type StaticWebhookBody = WebhookBody;
-export type StaticWebhookHeaders = WebhookHeaders;
-export interface StaticWebhookFactoryOptions extends WebhookFactoryOptions {}
-export type StaticWebhookHandlerFn = WebhookHandlerFn;
-
-export const createStaticWebhookHandler = createWebhookHandler;

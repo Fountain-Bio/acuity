@@ -285,19 +285,18 @@ export interface Calendar {
   thumbnail?: string | null;
 }
 
-export type StaticWebhookAppointmentAction =
+export type WebhookAppointmentAction =
   | "scheduled"
   | "rescheduled"
   | "canceled"
   | "changed";
 
-export type StaticWebhookEventType =
-  `appointment.${StaticWebhookAppointmentAction}`;
+export type WebhookEventType = `appointment.${WebhookAppointmentAction}`;
 
-export interface StaticWebhookEvent {
+export interface WebhookEvent {
   scope: "appointment";
-  action: StaticWebhookAppointmentAction;
-  type: StaticWebhookEventType;
+  action: WebhookAppointmentAction;
+  type: WebhookEventType;
   id: number;
   calendarID: number | null;
   appointmentTypeID: number | null;
@@ -305,22 +304,18 @@ export interface StaticWebhookEvent {
   rawBody: string;
 }
 
-export type StaticWebhookHandler = (
-  event: StaticWebhookEvent,
-) => void | Promise<void>;
+export type WebhookHandler = (event: WebhookEvent) => void | Promise<void>;
 
-export type DynamicWebhookEvent = StaticWebhookEventType;
-
-export type DynamicWebhookStatus = "active" | "disabled";
+export type WebhookStatus = "active" | "disabled";
 
 export interface CreateWebhookSubscriptionPayload {
-  event: DynamicWebhookEvent;
+  event: WebhookEventType;
   target: string;
 }
 
 export interface WebhookSubscription {
   id: number;
-  event: DynamicWebhookEvent;
+  event: WebhookEventType;
   target: string;
-  status: DynamicWebhookStatus;
+  status: WebhookStatus;
 }

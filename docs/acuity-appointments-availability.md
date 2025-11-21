@@ -360,7 +360,7 @@ Static webhooks are configured under the Acuity dashboard and send `application/
 
 - Supported `action` values for static webhooks are `scheduled`, `rescheduled`, `canceled`, and `changed` for appointments. (Source: https://developers.acuityscheduling.com/docs/webhooks#static-webhooks)
 - Each delivery contains an `X-Acuity-Signature` header with a Base64-encoded HMAC-SHA256 hash of the exact request body computed with your API key as the secret. Always compute the HMAC over the raw bytes before parsing and compare it to the header to reject tampered payloads. (Source: https://developers.acuityscheduling.com/docs/webhooks#verifying-webhooks)
-- The SDK now exposes `createWebhookHandler` (also exported as `createStaticWebhookHandler`), which binds your webhook secret and lets you call the returned function with `(body, headers, handler)` for each request. Signature verification, payload parsing, and typed `appointment.*` events all live behind this helper. Dynamic webhooks handle the same appointment events but are configured via the REST helpers below.
+- The SDK exposes `createWebhookHandler`, which binds your webhook secret and lets you call the returned function with `(body, headers, handler)` for each request. Signature verification, payload parsing, and typed `appointment.*` events all live behind this helper. Dynamic webhooks handle the same appointment events but are configured via the REST helpers below.
 
 ## Dynamic Webhooks
 
