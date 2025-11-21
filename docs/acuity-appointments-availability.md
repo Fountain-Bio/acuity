@@ -360,7 +360,7 @@ Static webhooks are configured under the Acuity dashboard and send `application/
 
 - Supported `action` values for static webhooks are `scheduled`, `rescheduled`, `canceled`, and `changed` for appointments. (Source: https://developers.acuityscheduling.com/docs/webhooks#static-webhooks)
 - Each delivery contains an `X-Acuity-Signature` header with a Base64-encoded HMAC-SHA256 hash of the exact request body computed with your API key as the secret. Always compute the HMAC over the raw bytes before parsing and compare it to the header to reject tampered payloads. (Source: https://developers.acuityscheduling.com/docs/webhooks#verifying-webhooks)
-- The SDK exposes `createWebhookHandler`, which binds your webhook secret and lets you call the returned function with `(body, headers, handler)` for each request. Signature verification, payload parsing, and typed `appointment.*` events all live behind this helper. Dynamic webhooks handle the same appointment events but are configured via the REST helpers below.
+- The SDK exposes `createWebhookHandler`, which binds your webhook secret and lets you call the returned function with `(body, headers, handler)` for each request. Signature verification is on by default but can be disabled for development, and parsing/verification utilities (`parseWebhookEvent`, `verifyWebhookSignature`) are exported separately when you want to orchestrate the steps yourself. Dynamic webhooks handle the same appointment events but are configured via the REST helpers below.
 
 ## Dynamic Webhooks
 
@@ -384,4 +384,4 @@ Webhook notifications are signed with a Base64-encoded HMAC-SHA256 hash of the e
 
 ### SDK integration
 
-Call `acuity.webhooks.create({ event, target })` to register a hook, `acuity.webhooks.list()` to enumerate them, and `acuity.webhooks.delete(id)` to remove obsolete subscriptions. Provide the corresponding API key to `createWebhookHandler` so both static and dynamic deliveries share the same validation helper. (Source: https://developers.acuityscheduling.com/page/webhooks-webhooks-webhooks)
+Call `acuity.webhooks.create({ event, target })` to register a hook, `acuity.webhooks.list()` to enumerate them, and `acuity.webhooks.delete(id)` to remove obsolete subscriptions. Provide the corresponding API key to `createWebhookHandler` (or to `verifyWebhookSignature` if you are wiring the pieces manually) when you want signature enforcement, and set `verifySignature: false` for development flows that need to bypass checks. (Source: https://developers.acuityscheduling.com/page/webhooks-webhooks-webhooks)

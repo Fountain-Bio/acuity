@@ -48,12 +48,14 @@ import { createWebhookHandler } from "@fountain-bio/acuity-sdk";
 
 const handleWebhook = createWebhookHandler({
   secret: process.env.ACUITY_WEBHOOK_SECRET!,
+  // Turn verification off in non-prod environments if you need to replay requests.
+  verifySignature: process.env.NODE_ENV === "production",
 });
 
 export async function POST(req: Request) {
   const body = await req.text();
 
-  await handleWebhook(body, req.headers, async (event) => {
+  const result = await handleWebhook(body, req.headers, async (event) => {
     switch (event.type) {
       case "appointment.scheduled":
         break;
@@ -66,11 +68,12 @@ export async function POST(req: Request) {
     }
   });
 
+  // result.verified === false when verifySignature is disabled
   return new Response(null, { status: 204 });
 }
 ```
 
-`createWebhookHandler` binds the API key and signature header name once, returning a function you call per request with the raw body, headers, and your event handler. The helper verifies the `x-acuity-signature` header, parses the form-encoded payload, and surfaces typed appointment events for you to branch on.
+`createWebhookHandler` binds the signature preferences once, returning a function you call per request with the raw body, headers, and your event handler. The helper can verify the `x-acuity-signature` header (enabled by default), parse the form-encoded payload, and surface typed appointment events. If you want to own each step manually, use the exported `verifyWebhookSignature` and `parseWebhookEvent` helpers directly.
 
 ## Managing dynamic webhooks
 
@@ -90,6 +93,7 @@ Dynamic webhooks call your HTTPS endpoint and include an `x-acuity-signature` he
 ```ts
 const handleDynamicWebhook = createWebhookHandler({
   secret: process.env.ACUITY_API_KEY!,
+  verifySignature: process.env.NODE_ENV === "production",
 });
 
 export async function POST(req: Request) {

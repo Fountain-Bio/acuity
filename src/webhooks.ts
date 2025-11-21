@@ -21,7 +21,7 @@ type HeaderGetter = {
 export type WebhookBody = string | ArrayBuffer | ArrayBufferView;
 export type WebhookHeaders = HeaderBag;
 
-export interface WebhookFactoryOptions {
+export interface WebhookSignatureVerificationOptions {
   /**
    * API key used to sign webhook requests (main admin for dashboard-configured
    * hooks, or the authenticated user's key for API-created hooks).
@@ -33,17 +33,50 @@ export interface WebhookFactoryOptions {
   headerName?: string;
 }
 
+export interface VerifyWebhookSignatureParams
+  extends WebhookSignatureVerificationOptions {
+  body: WebhookBody;
+  headers?: WebhookHeaders;
+  /**
+   * Signature to verify. If omitted, the helper tries to resolve it from the
+   * provided headers.
+   */
+  signature?: string | null;
+}
+
+export interface WebhookHandlerOptions {
+  /**
+   * API key used to verify webhook payloads. Required when
+   * `verifySignature !== false`.
+   */
+  secret?: string;
+  /**
+   * Override the signature header name. Defaults to `x-acuity-signature`.
+   */
+  headerName?: string;
+  /**
+   * Disable signature verification (useful for local development).
+   */
+  verifySignature?: boolean;
+}
+
+export interface WebhookHandleResult {
+  event: WebhookEvent;
+  signature: string | null;
+  verified: boolean;
+}
+
 export type WebhookHandlerFn = (
   body: WebhookBody,
   headers: WebhookHeaders | undefined,
   handler: WebhookHandler,
   signature?: string | null,
-) => Promise<WebhookEvent>;
+) => Promise<WebhookHandleResult>;
 
-export function createWebhookHandler(
-  options: WebhookFactoryOptions,
-): WebhookHandlerFn {
-  const secret = options.secret?.trim();
+export function verifyWebhookSignature(
+  params: VerifyWebhookSignatureParams,
+): string {
+  const secret = params.secret?.trim();
   if (!secret) {
     throw new AcuityWebhookError({
       code: "invalid_payload",
@@ -51,14 +84,53 @@ export function createWebhookHandler(
     });
   }
 
+  const resolvedSignature =
+    resolveSignature(params.signature, params.headers, params.headerName) ??
+    null;
+
+  if (!resolvedSignature) {
+    const header = params.headerName ?? DEFAULT_SIGNATURE_HEADER;
+    throw new AcuityWebhookError({
+      code: "signature_missing",
+      message: `Missing "${header}" header on webhook request.`,
+    });
+  }
+
+  const bodyBytes = normalizeBody(params.body);
+  const expected = computeSignature(secret, bodyBytes);
+
+  if (!safeCompare(expected, resolvedSignature)) {
+    throw new AcuityWebhookError({ code: "signature_mismatch" });
+  }
+
+  return resolvedSignature;
+}
+
+export function parseWebhookEvent(body: WebhookBody): WebhookEvent {
+  const normalized = normalizeBody(body);
+  return parseWebhookEventFromText(decodeBody(normalized));
+}
+
+export function createWebhookHandler(
+  options: WebhookHandlerOptions,
+): WebhookHandlerFn {
+  const shouldVerify = options.verifySignature !== false;
+  const secret = options.secret?.trim();
   const headerName = options.headerName ?? DEFAULT_SIGNATURE_HEADER;
+
+  if (shouldVerify && !secret) {
+    throw new AcuityWebhookError({
+      code: "invalid_payload",
+      message: "Webhook secret is required to verify requests.",
+    });
+  }
 
   return async function handleWebhook(
     body: WebhookBody,
     headers: WebhookHeaders | undefined,
     handler: WebhookHandler,
     signature?: string | null,
-  ): Promise<WebhookEvent> {
+  ): Promise<WebhookHandleResult> {
     if (typeof handler !== "function") {
       throw new AcuityWebhookError({
         code: "invalid_payload",
@@ -66,26 +138,24 @@ export function createWebhookHandler(
       });
     }
 
-    const resolvedSignature =
-      resolveSignature(signature, headers, headerName) ?? null;
+    const resolvedSignature = shouldVerify
+      ? verifyWebhookSignature({
+          body,
+          headers,
+          signature,
+          secret: secret!,
+          headerName,
+        })
+      : (resolveSignature(signature, headers, headerName) ?? null);
 
-    if (!resolvedSignature) {
-      throw new AcuityWebhookError({
-        code: "signature_missing",
-        message: `Missing "${headerName}" header on webhook request.`,
-      });
-    }
-
-    const bodyBytes = normalizeBody(body);
-    const expected = computeSignature(secret, bodyBytes);
-
-    if (!safeCompare(expected, resolvedSignature)) {
-      throw new AcuityWebhookError({ code: "signature_mismatch" });
-    }
-
-    const event = parseWebhookEventFromText(decodeBody(bodyBytes));
+    const event = parseWebhookEvent(body);
     await handler(event);
-    return event;
+
+    return {
+      event,
+      signature: resolvedSignature,
+      verified: shouldVerify,
+    };
   };
 }
 
