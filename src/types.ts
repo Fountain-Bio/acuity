@@ -69,7 +69,7 @@ export interface Appointment {
   /**
    * ISO8601 Datetime
    */
-  dateTime: string;
+  datetime: string;
   type: string;
   appointmentTypeID: number;
   calendar: string;
