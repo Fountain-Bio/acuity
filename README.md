@@ -17,7 +17,21 @@ bunx @fountain-bio/acuity appointments list \
   --max 5
 ```
 
-Flags mirror the SDK types: `appointments list/get/types`, `availability dates/times/check`, and `calendars list`. Credentials default from `ACUITY_USER_ID` / `ACUITY_API_KEY`; optional `ACUITY_BASE_URL` and `ACUITY_TIMEOUT_MS` are also respected. Pass `--compact` to emit single-line JSON.
+Flags mirror the SDK types: `appointments list/get/types`, `availability dates/times/check`, `calendars list`, and `webhooks list/create/delete`. Credentials default from `ACUITY_USER_ID` / `ACUITY_API_KEY`; optional `ACUITY_BASE_URL` and `ACUITY_TIMEOUT_MS` are also respected. Pass `--compact` to emit single-line JSON.
+
+Create and manage dynamic webhooks from the CLI:
+
+```bash
+bunx @fountain-bio/acuity webhooks create \
+  --user-id $ACUITY_USER_ID \
+  --api-key $ACUITY_API_KEY \
+  --event appointment.scheduled \
+  --target https://example.com/webhooks/acuity
+
+bunx @fountain-bio/acuity webhooks list
+
+bunx @fountain-bio/acuity webhooks delete 123
+```
 
 ## Usage
 

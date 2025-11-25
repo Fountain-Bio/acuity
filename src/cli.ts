@@ -11,6 +11,7 @@ import type {
   AvailabilityTimesParams,
   AvailabilityDatesParams,
   ListAppointmentsParams,
+  WebhookEventType,
 } from "./types.js";
 
 type GlobalArgs = {
@@ -61,6 +62,11 @@ type AvailabilityCheckArgs = GlobalArgs & {
   timezone?: CheckTimesPayload["timezone"];
   duration?: CheckTimesPayload["duration"];
   price?: CheckTimesPayload["price"];
+};
+
+type WebhookCreateArgs = GlobalArgs & {
+  event: WebhookEventType;
+  target: string;
 };
 
 function parseEnvNumber(name: string): number | undefined {
@@ -398,6 +404,61 @@ async function main(): Promise<void> {
         const client = createClient(argv);
         const calendars = await client.calendars.list();
         printJson(calendars, argv.compact);
+      },
+    )
+    .command(
+      "webhooks list",
+      "List dynamic webhook subscriptions",
+      (yargs: Argv) => yargs,
+      async (argv: ArgumentsCamelCase<GlobalArgs>) => {
+        const client = createClient(argv);
+        const hooks = await client.webhooks.list();
+        printJson(hooks, argv.compact);
+      },
+    )
+    .command(
+      "webhooks create",
+      "Create a dynamic webhook subscription",
+      (yargs: Argv) =>
+        yargs
+          .option("event", {
+            type: "string",
+            choices: [
+              "appointment.scheduled",
+              "appointment.rescheduled",
+              "appointment.canceled",
+              "appointment.changed",
+            ] as const,
+            demandOption: true,
+            describe: "Event name to subscribe to.",
+          })
+          .option("target", {
+            type: "string",
+            demandOption: true,
+            describe: "HTTPS endpoint that should receive webhook deliveries.",
+          }),
+      async (argv: ArgumentsCamelCase<WebhookCreateArgs>) => {
+        const client = createClient(argv);
+        const hook = await client.webhooks.create({
+          event: argv.event,
+          target: argv.target,
+        });
+        printJson(hook, argv.compact);
+      },
+    )
+    .command(
+      "webhooks delete <id>",
+      "Delete a dynamic webhook subscription",
+      (yargs: Argv) =>
+        yargs.positional("id", {
+          type: "number",
+          demandOption: true,
+          describe: "Webhook ID to delete.",
+        }),
+      async (argv: ArgumentsCamelCase<GlobalArgs & { id: number }>) => {
+        const client = createClient(argv);
+        await client.webhooks.delete(argv.id);
+        printJson({ deleted: argv.id }, argv.compact);
       },
     );
 
