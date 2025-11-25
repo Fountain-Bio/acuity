@@ -153,135 +153,140 @@ async function main(): Promise<void> {
       default: false,
       describe: "Print JSON without indentation.",
     })
-    .command(
-      "appointments list",
-      "List appointments with optional filters",
-      (yargs: Argv) =>
-        yargs
-          .option("calendar-id", {
-            type: "number",
-            describe: "Filter by calendar ID.",
-          })
-          .option("category-id", {
-            type: "number",
-            describe: "Filter by category ID.",
-          })
-          .option("appointment-type-id", {
-            type: "number",
-            describe: "Filter by appointment type ID.",
-          })
-          .option("client-id", {
-            type: "number",
-            describe: "Filter by client ID.",
-          })
-          .option("max", {
-            type: "number",
-            describe: "Maximum number of appointments to return.",
-          })
-          .option("min-date", {
-            type: "string",
-            describe: "Earliest appointment date (YYYY-MM-DD).",
-          })
-          .option("max-date", {
-            type: "string",
-            describe: "Latest appointment date (YYYY-MM-DD).",
-          })
-          .option("min-time", {
-            type: "string",
-            describe: "Earliest appointment timestamp (ISO 8601).",
-          })
-          .option("max-time", {
-            type: "string",
-            describe: "Latest appointment timestamp (ISO 8601).",
-          })
-          .option("canceled", {
-            type: "boolean",
-            describe: "Include only canceled appointments if true.",
-          })
-          .option("showall", {
-            type: "boolean",
-            describe: "Include inactive appointments as well.",
-          })
-          .option("direction", {
-            choices: ["asc", "desc"] as const,
-            describe: "Sort direction for appointment listings.",
-          })
-          .option("exclude-forms", {
-            type: "boolean",
-            describe: "Omit form answers from the response payload.",
-          })
-          .option("timezone", {
-            type: "string",
-            describe: "IANA timezone used for display fields.",
-          })
-          .option("page", {
-            type: "number",
-            describe: "Results page (if the account enables pagination).",
-          })
-          .option("limit", {
-            type: "number",
-            describe: "Page size when pagination is enabled.",
-          }),
-      async (argv: ArgumentsCamelCase<AppointmentsListArgs>) => {
-        const client = createClient(argv);
-        const appointments = await client.appointments.list({
-          calendarID: argv.calendarId,
-          categoryID: argv.categoryId,
-          appointmentTypeID: argv.appointmentTypeId,
-          clientID: argv.clientId,
-          max: argv.max,
-          minDate: argv.minDate,
-          maxDate: argv.maxDate,
-          minTime: argv.minTime,
-          maxTime: argv.maxTime,
-          canceled: argv.canceled,
-          showall: argv.showall,
-          direction: argv.direction,
-          excludeForms: argv.excludeForms,
-          timezone: argv.timezone,
-          page: argv.page,
-          limit: argv.limit,
-        });
+    .command("appointments", "Manage appointments", (yargs: Argv) =>
+      yargs
+        .command(
+          "list",
+          "List appointments with optional filters",
+          (yargs: Argv) =>
+            yargs
+              .option("calendar-id", {
+                type: "number",
+                describe: "Filter by calendar ID.",
+              })
+              .option("category-id", {
+                type: "number",
+                describe: "Filter by category ID.",
+              })
+              .option("appointment-type-id", {
+                type: "number",
+                describe: "Filter by appointment type ID.",
+              })
+              .option("client-id", {
+                type: "number",
+                describe: "Filter by client ID.",
+              })
+              .option("max", {
+                type: "number",
+                describe: "Maximum number of appointments to return.",
+              })
+              .option("min-date", {
+                type: "string",
+                describe: "Earliest appointment date (YYYY-MM-DD).",
+              })
+              .option("max-date", {
+                type: "string",
+                describe: "Latest appointment date (YYYY-MM-DD).",
+              })
+              .option("min-time", {
+                type: "string",
+                describe: "Earliest appointment timestamp (ISO 8601).",
+              })
+              .option("max-time", {
+                type: "string",
+                describe: "Latest appointment timestamp (ISO 8601).",
+              })
+              .option("canceled", {
+                type: "boolean",
+                describe: "Include only canceled appointments if true.",
+              })
+              .option("showall", {
+                type: "boolean",
+                describe: "Include inactive appointments as well.",
+              })
+              .option("direction", {
+                choices: ["asc", "desc"] as const,
+                describe: "Sort direction for appointment listings.",
+              })
+              .option("exclude-forms", {
+                type: "boolean",
+                describe: "Omit form answers from the response payload.",
+              })
+              .option("timezone", {
+                type: "string",
+                describe: "IANA timezone used for display fields.",
+              })
+              .option("page", {
+                type: "number",
+                describe: "Results page (if the account enables pagination).",
+              })
+              .option("limit", {
+                type: "number",
+                describe: "Page size when pagination is enabled.",
+              }),
+          async (argv: ArgumentsCamelCase<AppointmentsListArgs>) => {
+            const client = createClient(argv);
+            const appointments = await client.appointments.list({
+              calendarID: argv.calendarId,
+              categoryID: argv.categoryId,
+              appointmentTypeID: argv.appointmentTypeId,
+              clientID: argv.clientId,
+              max: argv.max,
+              minDate: argv.minDate,
+              maxDate: argv.maxDate,
+              minTime: argv.minTime,
+              maxTime: argv.maxTime,
+              canceled: argv.canceled,
+              showall: argv.showall,
+              direction: argv.direction,
+              excludeForms: argv.excludeForms,
+              timezone: argv.timezone,
+              page: argv.page,
+              limit: argv.limit,
+            });
 
-        printJson(appointments, argv.compact);
-      },
-    )
-    .command(
-      "appointments get <id>",
-      "Fetch a single appointment by ID",
-      (yargs: Argv) =>
-        yargs
-          .positional("id", {
-            type: "number",
-            describe: "Appointment ID to fetch.",
-            demandOption: true,
-          })
-          .option("past-form-answers", {
-            type: "boolean",
-            default: false,
-            describe: "Include historical form answers in the response.",
-          }),
-      async (
-        argv: ArgumentsCamelCase<
-          GlobalArgs & { id: number; pastFormAnswers?: boolean }
-        >,
-      ) => {
-        const client = createClient(argv);
-        const appointment = await client.appointments.get(argv.id, {
-          pastFormAnswers: argv.pastFormAnswers,
-        });
-        printJson(appointment, argv.compact);
-      },
-    )
-    .command(
-      "appointments types",
-      "List appointment types configured on the account",
-      (yargs: Argv) => yargs,
-      async (argv: ArgumentsCamelCase<GlobalArgs>) => {
-        const client = createClient(argv);
-        const types = await client.appointments.types();
-        printJson(types, argv.compact);
-      },
+            printJson(appointments, argv.compact);
+          },
+        )
+        .command(
+          "get <id>",
+          "Fetch a single appointment by ID",
+          (yargs: Argv) =>
+            yargs
+              .positional("id", {
+                type: "number",
+                describe: "Appointment ID to fetch.",
+                demandOption: true,
+              })
+              .option("past-form-answers", {
+                type: "boolean",
+                default: false,
+                describe: "Include historical form answers in the response.",
+              }),
+          async (
+            argv: ArgumentsCamelCase<
+              GlobalArgs & { id: number; pastFormAnswers?: boolean }
+            >,
+          ) => {
+            const client = createClient(argv);
+            const appointment = await client.appointments.get(argv.id, {
+              pastFormAnswers: argv.pastFormAnswers,
+            });
+            printJson(appointment, argv.compact);
+          },
+        )
+        .command(
+          "types",
+          "List appointment types configured on the account",
+          (yargs: Argv) => yargs,
+          async (argv: ArgumentsCamelCase<GlobalArgs>) => {
+            const client = createClient(argv);
+            const types = await client.appointments.types();
+            printJson(types, argv.compact);
+          },
+        )
+        .demandCommand(1, "Choose an appointments subcommand to run.")
+        .strict(),
     )
     .command(
       "availability dates",
@@ -407,59 +412,68 @@ async function main(): Promise<void> {
       },
     )
     .command(
-      "webhooks list",
-      "List dynamic webhook subscriptions",
-      (yargs: Argv) => yargs,
-      async (argv: ArgumentsCamelCase<GlobalArgs>) => {
-        const client = createClient(argv);
-        const hooks = await client.webhooks.list();
-        printJson(hooks, argv.compact);
-      },
-    )
-    .command(
-      "webhooks create",
-      "Create a dynamic webhook subscription",
+      "webhooks",
+      "Manage dynamic webhook subscriptions",
       (yargs: Argv) =>
         yargs
-          .option("event", {
-            type: "string",
-            choices: [
-              "appointment.scheduled",
-              "appointment.rescheduled",
-              "appointment.canceled",
-              "appointment.changed",
-            ] as const,
-            demandOption: true,
-            describe: "Event name to subscribe to.",
-          })
-          .option("target", {
-            type: "string",
-            demandOption: true,
-            describe: "HTTPS endpoint that should receive webhook deliveries.",
-          }),
-      async (argv: ArgumentsCamelCase<WebhookCreateArgs>) => {
-        const client = createClient(argv);
-        const hook = await client.webhooks.create({
-          event: argv.event,
-          target: argv.target,
-        });
-        printJson(hook, argv.compact);
-      },
-    )
-    .command(
-      "webhooks delete <id>",
-      "Delete a dynamic webhook subscription",
-      (yargs: Argv) =>
-        yargs.positional("id", {
-          type: "number",
-          demandOption: true,
-          describe: "Webhook ID to delete.",
-        }),
-      async (argv: ArgumentsCamelCase<GlobalArgs & { id: number }>) => {
-        const client = createClient(argv);
-        await client.webhooks.delete(argv.id);
-        printJson({ deleted: argv.id }, argv.compact);
-      },
+          .command(
+            "list",
+            "List dynamic webhook subscriptions",
+            (yargs: Argv) => yargs,
+            async (argv: ArgumentsCamelCase<GlobalArgs>) => {
+              const client = createClient(argv);
+              const hooks = await client.webhooks.list();
+              printJson(hooks, argv.compact);
+            },
+          )
+          .command(
+            "create",
+            "Create a dynamic webhook subscription",
+            (yargs: Argv) =>
+              yargs
+                .option("event", {
+                  type: "string",
+                  choices: [
+                    "appointment.scheduled",
+                    "appointment.rescheduled",
+                    "appointment.canceled",
+                    "appointment.changed",
+                  ] as const,
+                  demandOption: true,
+                  describe: "Event name to subscribe to.",
+                })
+                .option("target", {
+                  type: "string",
+                  demandOption: true,
+                  describe:
+                    "HTTPS endpoint that should receive webhook deliveries.",
+                }),
+            async (argv: ArgumentsCamelCase<WebhookCreateArgs>) => {
+              const client = createClient(argv);
+              const hook = await client.webhooks.create({
+                event: argv.event,
+                target: argv.target,
+              });
+              printJson(hook, argv.compact);
+            },
+          )
+          .command(
+            "delete <id>",
+            "Delete a dynamic webhook subscription",
+            (yargs: Argv) =>
+              yargs.positional("id", {
+                type: "number",
+                demandOption: true,
+                describe: "Webhook ID to delete.",
+              }),
+            async (argv: ArgumentsCamelCase<GlobalArgs & { id: number }>) => {
+              const client = createClient(argv);
+              await client.webhooks.delete(argv.id);
+              printJson({ deleted: argv.id }, argv.compact);
+            },
+          )
+          .demandCommand(1, "Choose a webhooks subcommand to run.")
+          .strict(),
     );
 
   await parser.parseAsync();
