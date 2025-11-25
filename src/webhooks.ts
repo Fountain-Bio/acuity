@@ -2,7 +2,6 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 
 import { AcuityWebhookError } from "./errors.js";
 import type {
-  WebhookAppointmentAction,
   WebhookEventType,
   WebhookEvent,
   WebhookHandler,
@@ -159,22 +158,16 @@ export function createWebhookHandler(
   };
 }
 
-const APPOINTMENT_ACTIONS: readonly WebhookAppointmentAction[] = [
-  "scheduled",
-  "rescheduled",
-  "canceled",
-  "changed",
-];
+const APPOINTMENT_EVENT_TYPES = new Set<WebhookEventType>([
+  "appointment.scheduled",
+  "appointment.rescheduled",
+  "appointment.canceled",
+  "appointment.changed",
+]);
 
-const APPOINTMENT_EVENT_TYPE_MAP: Record<
-  WebhookAppointmentAction,
-  WebhookEventType
-> = {
-  scheduled: "appointment.scheduled",
-  rescheduled: "appointment.rescheduled",
-  canceled: "appointment.canceled",
-  changed: "appointment.changed",
-};
+function isWebhookEventType(value: string): value is WebhookEventType {
+  return (APPOINTMENT_EVENT_TYPES as ReadonlySet<string>).has(value);
+}
 
 function parseWebhookEventFromText(bodyText: string): WebhookEvent {
   const params = new URLSearchParams(bodyText);
@@ -183,7 +176,7 @@ function parseWebhookEventFromText(bodyText: string): WebhookEvent {
     payload[key] = value;
   });
 
-  const actionValue = payload.action?.trim();
+  const actionValue = payload.action;
 
   if (!actionValue) {
     throw new AcuityWebhookError({
@@ -192,7 +185,7 @@ function parseWebhookEventFromText(bodyText: string): WebhookEvent {
     });
   }
 
-  if (!isAppointmentAction(actionValue)) {
+  if (!isWebhookEventType(actionValue)) {
     throw new AcuityWebhookError({
       code: "invalid_payload",
       message: `Unsupported webhook action "${actionValue}".`,
@@ -207,9 +200,7 @@ function parseWebhookEventFromText(bodyText: string): WebhookEvent {
   );
 
   return {
-    scope: "appointment",
     action: actionValue,
-    type: APPOINTMENT_EVENT_TYPE_MAP[actionValue],
     id,
     calendarID,
     appointmentTypeID,
@@ -255,12 +246,6 @@ function parseNumeric(
   }
 
   return parsed;
-}
-
-function isAppointmentAction(
-  action: string,
-): action is WebhookAppointmentAction {
-  return (APPOINTMENT_ACTIONS as readonly string[]).includes(action);
 }
 
 function resolveSignature(

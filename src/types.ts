@@ -285,23 +285,19 @@ export interface Calendar {
   thumbnail?: string | null;
 }
 
-export type WebhookAppointmentAction =
-  | "scheduled"
-  | "rescheduled"
-  | "canceled"
-  | "changed";
-
-export type WebhookEventType = `appointment.${WebhookAppointmentAction}`;
+export type WebhookEventType =
+  | "appointment.scheduled"
+  | "appointment.rescheduled"
+  | "appointment.canceled"
+  | "appointment.changed";
 
 export interface WebhookEvent {
-  scope: "appointment";
-  action: WebhookAppointmentAction;
-  type: WebhookEventType;
   id: number;
   calendarID: number | null;
   appointmentTypeID: number | null;
   payload: Record<string, string | undefined>;
   rawBody: string;
+  action: WebhookEventType;
 }
 
 export type WebhookHandler = (event: WebhookEvent) => void | Promise<void>;

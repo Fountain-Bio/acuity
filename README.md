@@ -70,7 +70,7 @@ export async function POST(req: Request) {
   const body = await req.text();
 
   const result = await handleWebhook(body, req.headers, async (event) => {
-    switch (event.type) {
+    switch (event.action) {
       case "appointment.scheduled":
         break;
       case "appointment.rescheduled":
@@ -112,7 +112,7 @@ const handleDynamicWebhook = createWebhookHandler({
 
 export async function POST(req: Request) {
   await handleDynamicWebhook(await req.text(), req.headers, async (event) => {
-    console.log("dynamic webhook event", event.type);
+    console.log("dynamic webhook event", event.action);
   });
   return new Response(null, { status: 204 });
 }

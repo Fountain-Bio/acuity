@@ -356,9 +356,7 @@ Additional account-specific metadata (color, scheduling URLs, form references, e
 
 ## Static Webhooks
 
-Static webhooks are configured under the Acuity dashboard and send `application/x-www-form-urlencoded` payloads that always include `action` plus identifiers such as `id`, `calendarID`, and `appointmentTypeID` for appointment-related events. (Source: https://developers.acuityscheduling.com/docs/webhooks#static-webhooks)
-
-- Supported `action` values for static webhooks are `scheduled`, `rescheduled`, `canceled`, and `changed` for appointments. (Source: https://developers.acuityscheduling.com/docs/webhooks#static-webhooks)
+Static webhooks are configured under the Acuity dashboard and send `application/x-www-form-urlencoded` payloads that always include `action` plus identifiers such as `id`, `calendarID`, and `appointmentTypeID` for appointment-related events. The `action` field arrives as the full event name (e.g., `appointment.scheduled`, `appointment.rescheduled`, `appointment.canceled`, `appointment.changed`). The SDK forwards that `action` verbatim on the parsed event—there is no extra `type` or `scope` field. (Source: https://developers.acuityscheduling.com/docs/webhooks#static-webhooks)
 - Each delivery contains an `X-Acuity-Signature` header with a Base64-encoded HMAC-SHA256 hash of the exact request body computed with your API key as the secret. Always compute the HMAC over the raw bytes before parsing and compare it to the header to reject tampered payloads. (Source: https://developers.acuityscheduling.com/docs/webhooks#verifying-webhooks)
 - The SDK exposes `createWebhookHandler`, which binds your webhook secret and lets you call the returned function with `(body, headers, handler)` for each request. Signature verification is on by default but can be disabled for development, and parsing/verification utilities (`parseWebhookEvent`, `verifyWebhookSignature`) are exported separately when you want to orchestrate the steps yourself. Dynamic webhooks handle the same appointment events but are configured via the REST helpers below.
 
