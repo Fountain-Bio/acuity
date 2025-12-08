@@ -61,10 +61,20 @@ export interface Appointment {
   lastName: string;
   email: string;
   phone?: string;
+
+  /**
+   * Human readable date (e.g., December 12, 2025)
+   */
   date: string;
+
   endDate?: string;
   time: string;
   endTime?: string;
+
+  /**
+   * Duration in minutes
+   */
+  duration: string;
 
   /**
    * ISO8601 Datetime
