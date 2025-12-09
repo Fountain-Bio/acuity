@@ -252,6 +252,11 @@ export interface AvailabilityTimesParams {
    * IANA timezone identifier (e.g., `America/New_York`) applied to display fields.
    */
   timezone?: string;
+
+  /**
+   *Appointment IDs to ignore, allowing slots overlapping the appointment and useful for rescheduling.
+   */
+  ignoreAppointmentIds?: number[];
 }
 
 export interface CheckTimesPayload {
