@@ -258,7 +258,7 @@ Returns precise start times for a date.
 | `appointmentTypeID` | ✔ | Appointment type. |
 | `calendarID` | ✖ | Restrict to a calendar. |
 | `timezone` | ✖ | Force timezone for readability. |
-| `ignoreAppointmentIds` | ✖ | Comma-separated appointment IDs to ignore (helps keep reschedule candidates visible). |
+| `ignoreAppointmentIDs` | ✖ | Comma-separated appointment IDs to ignore (helps keep reschedule candidates visible). |
 
 Each returned slot object only exposes a `time` field in ISO 8601 format (with the timezone offset baked in). Use `/availability/check-times` when you need metadata such as timezone labels, calendar names, or pricing.
 

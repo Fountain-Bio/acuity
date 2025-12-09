@@ -19,7 +19,7 @@ bunx @fountain-bio/acuity appointments list \
 
 Flags mirror the SDK types: `appointments list/get/types`, `availability dates/times/check`, `calendars list`, and `webhooks list/create/delete`. Credentials default from `ACUITY_USER_ID` / `ACUITY_API_KEY`; optional `ACUITY_BASE_URL` and `ACUITY_TIMEOUT_MS` are also respected. Pass `--compact` to emit single-line JSON.
 
-Rescheduling helpers: `availability times` now accepts `--ignore` to pass a comma-separated list of appointment IDs that should be ignored when computing open slots (helpful when you need to keep the current booking’s slot visible).
+Rescheduling helpers: `availability times` now accepts `--ignore` to pass a comma-separated list of appointment IDs (`ignoreAppointmentIDs`) that should be ignored when computing open slots (helpful when you need to keep the current booking’s slot visible).
 
 Create and manage dynamic webhooks from the CLI:
 

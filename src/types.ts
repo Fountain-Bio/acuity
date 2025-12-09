@@ -256,7 +256,7 @@ export interface AvailabilityTimesParams {
   /**
    *Appointment IDs to ignore, allowing slots overlapping the appointment and useful for rescheduling.
    */
-  ignoreAppointmentIds?: number[];
+  ignoreAppointmentIDs?: number[];
 }
 
 export interface CheckTimesPayload {

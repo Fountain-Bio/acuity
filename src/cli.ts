@@ -392,7 +392,7 @@ async function main(): Promise<void> {
               appointmentTypeID: argv.appointmentTypeId,
               calendarID: argv.calendarId,
               timezone: argv.timezone,
-              ignoreAppointmentIds,
+              ignoreAppointmentIDs: ignoreAppointmentIds,
             });
             printJson(times, argv.compact);
           },
