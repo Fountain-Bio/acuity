@@ -1,44 +1,44 @@
 {
-	"name": "@fountain-bio/acuity",
-	"version": "0.0.22",
-	"type": "module",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"import": "./dist/index.js",
-			"types": "./dist/index.d.ts"
-		}
-	},
-	"bin": {
-		"acuity": "./dist/cli.js",
-		"@fountain-bio/acuity": "./dist/cli.js"
-	},
-	"files": [
-		"dist"
-	],
-	"scripts": {
-		"build": "tsc -p tsconfig.build.json",
-		"typecheck": "tsc --noEmit",
-		"lint": "oxlint --type-aware && oxfmt --check",
-		"fmt": "oxfmt",
-		"release": "npm version",
-		"release:patch": "npm version patch",
-		"release:minor": "npm version minor",
-		"release:major": "npm version major",
-		"release:beta": "npm version prerelease --preid=beta"
-	},
-	"dependencies": {
-		"yargs": "^18.0.0"
-	},
-	"devDependencies": {
-		"@types/bun": "latest",
-		"@types/yargs": "^17.0.35",
-		"oxfmt": "^0.14.0",
-		"oxlint": "^1.29.0",
-		"oxlint-tsgolint": "^0.8.0",
-		"typescript": "^5"
-	},
-	"peerDependencies": {}
+  "name": "@fountain-bio/acuity",
+  "version": "0.0.22",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "bin": {
+    "acuity": "./dist/cli.js",
+    "@fountain-bio/acuity": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint --type-aware && oxfmt --check",
+    "fmt": "oxfmt",
+    "release": "npm version",
+    "release:patch": "npm version patch",
+    "release:minor": "npm version minor",
+    "release:major": "npm version major",
+    "release:beta": "npm version prerelease --preid=beta"
+  },
+  "dependencies": {
+    "yargs": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.4",
+    "@types/yargs": "^17.0.35",
+    "oxfmt": "^0.17.0",
+    "oxlint": "^1.32.0",
+    "oxlint-tsgolint": "^0.8.4",
+    "typescript": "^5"
+  },
+  "peerDependencies": {}
 }

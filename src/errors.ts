@@ -14,8 +14,7 @@ export const AcuityErrorCode = {
   Network: "network_error",
 } as const;
 
-export type AcuityErrorCode =
-  (typeof AcuityErrorCode)[keyof typeof AcuityErrorCode];
+export type AcuityErrorCode = (typeof AcuityErrorCode)[keyof typeof AcuityErrorCode];
 
 // Endpoint-scoped codes for POST /appointments.
 export const AppointmentErrorCode = {
@@ -41,8 +40,7 @@ export const AppointmentErrorCode = {
   InvalidCertificateType: "invalid_certificate_type",
 } as const;
 
-export type AppointmentErrorCode =
-  (typeof AppointmentErrorCode)[keyof typeof AppointmentErrorCode];
+export type AppointmentErrorCode = (typeof AppointmentErrorCode)[keyof typeof AppointmentErrorCode];
 
 // Endpoint-scoped codes for PUT /appointments/cancel.
 export const CancelAppointmentErrorCode = {
@@ -113,9 +111,7 @@ export class AcuityForbiddenError extends AcuityError {
   constructor(details: AcuityErrorDetails) {
     super({
       ...details,
-      message:
-        details.message ??
-        "You do not have permission to access this resource.",
+      message: details.message ?? "You do not have permission to access this resource.",
     });
     this.name = "AcuityForbiddenError";
   }
@@ -135,8 +131,7 @@ export class AcuityRateLimitError extends AcuityError {
   constructor(details: AcuityErrorDetails) {
     super({
       ...details,
-      message:
-        details.message ?? "Rate limit exceeded. Please retry with backoff.",
+      message: details.message ?? "Rate limit exceeded. Please retry with backoff.",
     });
     this.name = "AcuityRateLimitError";
   }
@@ -156,9 +151,7 @@ export class AcuityConflictError extends AcuityError {
   constructor(details: AcuityErrorDetails) {
     super({
       ...details,
-      message:
-        details.message ??
-        "The request conflicts with the current state of the resource.",
+      message: details.message ?? "The request conflicts with the current state of the resource.",
     });
     this.name = "AcuityConflictError";
   }
@@ -189,8 +182,7 @@ export class AcuityTimeoutError extends AcuityError {
     super({
       ...details,
       message:
-        details.message ??
-        "Acuity request timed out. Consider increasing the timeout threshold.",
+        details.message ?? "Acuity request timed out. Consider increasing the timeout threshold.",
     });
     this.name = "AcuityTimeoutError";
   }
@@ -204,10 +196,7 @@ export type AcuityErrorResponse = {
   details?: unknown;
 };
 
-export type AcuityWebhookErrorCode =
-  | "signature_missing"
-  | "signature_mismatch"
-  | "invalid_payload";
+export type AcuityWebhookErrorCode = "signature_missing" | "signature_mismatch" | "invalid_payload";
 
 export interface AcuityWebhookErrorDetails {
   code: AcuityWebhookErrorCode;

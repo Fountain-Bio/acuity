@@ -1,11 +1,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 import { AcuityWebhookError } from "./errors.js";
-import type {
-  WebhookEventType,
-  WebhookEvent,
-  WebhookHandler,
-} from "./types.js";
+import type { WebhookEventType, WebhookEvent, WebhookHandler } from "./types.js";
 
 const DEFAULT_SIGNATURE_HEADER = "x-acuity-signature";
 const textEncoder = new TextEncoder();
@@ -32,8 +28,7 @@ export interface WebhookSignatureVerificationOptions {
   headerName?: string;
 }
 
-export interface VerifyWebhookSignatureParams
-  extends WebhookSignatureVerificationOptions {
+export interface VerifyWebhookSignatureParams extends WebhookSignatureVerificationOptions {
   body: WebhookBody;
   headers?: WebhookHeaders;
   /**
@@ -72,9 +67,7 @@ export type WebhookHandlerFn = (
   signature?: string | null,
 ) => Promise<WebhookHandleResult>;
 
-export function verifyWebhookSignature(
-  params: VerifyWebhookSignatureParams,
-): string {
+export function verifyWebhookSignature(params: VerifyWebhookSignatureParams): string {
   const secret = params.secret?.trim();
   if (!secret) {
     throw new AcuityWebhookError({
@@ -84,8 +77,7 @@ export function verifyWebhookSignature(
   }
 
   const resolvedSignature =
-    resolveSignature(params.signature, params.headers, params.headerName) ??
-    null;
+    resolveSignature(params.signature, params.headers, params.headerName) ?? null;
 
   if (!resolvedSignature) {
     const header = params.headerName ?? DEFAULT_SIGNATURE_HEADER;
@@ -110,9 +102,7 @@ export function parseWebhookEvent(body: WebhookBody): WebhookEvent {
   return parseWebhookEventFromText(decodeBody(normalized));
 }
 
-export function createWebhookHandler(
-  options: WebhookHandlerOptions,
-): WebhookHandlerFn {
+export function createWebhookHandler(options: WebhookHandlerOptions): WebhookHandlerFn {
   const shouldVerify = options.verifySignature !== false;
   const secret = options.secret?.trim();
   const headerName = options.headerName ?? DEFAULT_SIGNATURE_HEADER;
@@ -194,10 +184,7 @@ function parseWebhookEventFromText(bodyText: string): WebhookEvent {
 
   const id = parseNumeric(payload.id, "id", true);
   const calendarID = parseNumeric(payload.calendarID, "calendarID");
-  const appointmentTypeID = parseNumeric(
-    payload.appointmentTypeID,
-    "appointmentTypeID",
-  );
+  const appointmentTypeID = parseNumeric(payload.appointmentTypeID, "appointmentTypeID");
 
   return {
     action: actionValue,
@@ -209,21 +196,9 @@ function parseWebhookEventFromText(bodyText: string): WebhookEvent {
   };
 }
 
-function parseNumeric(
-  value: string | undefined,
-  field: string,
-  required?: false,
-): number | null;
-function parseNumeric(
-  value: string | undefined,
-  field: string,
-  required: true,
-): number;
-function parseNumeric(
-  value: string | undefined,
-  field: string,
-  required = false,
-): number | null {
+function parseNumeric(value: string | undefined, field: string, required?: false): number | null;
+function parseNumeric(value: string | undefined, field: string, required: true): number;
+function parseNumeric(value: string | undefined, field: string, required = false): number | null {
   const trimmed = value?.trim();
 
   if (!trimmed) {
@@ -264,9 +239,7 @@ function resolveSignature(
   const target = (headerName ?? DEFAULT_SIGNATURE_HEADER).toLowerCase();
 
   if (isHeaderGetter(headers)) {
-    const direct =
-      headers.get(headerName ?? DEFAULT_SIGNATURE_HEADER) ??
-      headers.get(target);
+    const direct = headers.get(headerName ?? DEFAULT_SIGNATURE_HEADER) ?? headers.get(target);
     return normalizeHeaderValue(direct);
   }
 
@@ -279,9 +252,7 @@ function resolveSignature(
   return undefined;
 }
 
-function normalizeHeaderValue(
-  value: string | string[] | undefined | null,
-): string | undefined {
+function normalizeHeaderValue(value: string | string[] | undefined | null): string | undefined {
   if (Array.isArray(value)) {
     return value[0]?.trim();
   }

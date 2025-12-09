@@ -182,13 +182,7 @@ export interface CreateAppointmentPayload {
 export type UpdateAppointmentPayload = Partial<
   Pick<
     CreateAppointmentPayload,
-    | "firstName"
-    | "lastName"
-    | "email"
-    | "phone"
-    | "notes"
-    | "fields"
-    | "calendarID"
+    "firstName" | "lastName" | "email" | "phone" | "notes" | "fields" | "calendarID"
   >
 >;
 

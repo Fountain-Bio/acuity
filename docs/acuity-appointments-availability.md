@@ -34,21 +34,21 @@ SDK note: configuring `requestTimeoutMs` on the `Acuity` client enforces a per-r
 
 Returns upcoming appointments for the authenticated account.
 
-| Query | Type | Description |
-| --- | --- | --- |
-| `calendarID` | integer | Restrict to a specific calendar. |
-| `categoryID` | integer | Filter by appointment category. |
-| `appointmentTypeID` | integer | Filter by appointment type. |
-| `clientID` | integer | Filter by client. |
-| `max` | integer | Limit total results. |
-| `minDate` / `maxDate` | date | Bound by date. |
-| `minTime` / `maxTime` | datetime | Bound by timestamp. |
-| `canceled` | boolean | `true` => only canceled appointments. |
-| `showall` | boolean | `true` => canceled and scheduled. |
-| `direction` | asc/desc | Sort order (defaults to `asc`). |
-| `excludeForms` | boolean | Drop form answers. |
-| `timezone` | string | Force timezone on returned fields. |
-| `page` / `limit` | integer | Pagination (limit default 20, max 200). |
+| Query                 | Type     | Description                             |
+| --------------------- | -------- | --------------------------------------- |
+| `calendarID`          | integer  | Restrict to a specific calendar.        |
+| `categoryID`          | integer  | Filter by appointment category.         |
+| `appointmentTypeID`   | integer  | Filter by appointment type.             |
+| `clientID`            | integer  | Filter by client.                       |
+| `max`                 | integer  | Limit total results.                    |
+| `minDate` / `maxDate` | date     | Bound by date.                          |
+| `minTime` / `maxTime` | datetime | Bound by timestamp.                     |
+| `canceled`            | boolean  | `true` => only canceled appointments.   |
+| `showall`             | boolean  | `true` => canceled and scheduled.       |
+| `direction`           | asc/desc | Sort order (defaults to `asc`).         |
+| `excludeForms`        | boolean  | Drop form answers.                      |
+| `timezone`            | string   | Force timezone on returned fields.      |
+| `page` / `limit`      | integer  | Pagination (limit default 20, max 200). |
 
 Canceled appointment payloads include the `noShow` flag that differentiates admin-marked no-shows vs. standard cancellations.
 
@@ -56,21 +56,21 @@ Canceled appointment payloads include the `noShow` flag that differentiates admi
 
 Returns an array of appointment objects. Each appointment includes:
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `id` | integer | Appointment identifier. |
-| `firstName` / `lastName` | string | Client name captured at booking. |
-| `email` / `phone` | string | Contact info echoed from the client form. |
-| `date` / `endDate` | string | Human-readable dates (e.g., `September 5, 2014`). |
-| `time` / `endTime` | ISO 8601 string | Start/end timestamps localized to the calendar timezone. |
-| `type` | string | Appointment type name. |
-| `appointmentTypeID` | integer | Numeric appointment type id. |
-| `calendar` / `calendarID` | string / integer | Name and id of the calendar that owns the appointment. |
-| `calendarTimeZone` | string | IANA timezone of the selected calendar. |
-| `price` / `paid` | string | Price quoted and total amount paid. |
-| `notes` | string | Client-entered notes. |
-| `forms` | array | Intake form answers. Each object contains `id`, `fieldID`, `name`, `value`, `isMultiple`, and `sortOrder`. |
-| `noShow` | boolean | Present on canceled payloads to differentiate no-shows from standard cancellations. |
+| Field                     | Type             | Description                                                                                                |
+| ------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
+| `id`                      | integer          | Appointment identifier.                                                                                    |
+| `firstName` / `lastName`  | string           | Client name captured at booking.                                                                           |
+| `email` / `phone`         | string           | Contact info echoed from the client form.                                                                  |
+| `date` / `endDate`        | string           | Human-readable dates (e.g., `September 5, 2014`).                                                          |
+| `time` / `endTime`        | ISO 8601 string  | Start/end timestamps localized to the calendar timezone.                                                   |
+| `type`                    | string           | Appointment type name.                                                                                     |
+| `appointmentTypeID`       | integer          | Numeric appointment type id.                                                                               |
+| `calendar` / `calendarID` | string / integer | Name and id of the calendar that owns the appointment.                                                     |
+| `calendarTimeZone`        | string           | IANA timezone of the selected calendar.                                                                    |
+| `price` / `paid`          | string           | Price quoted and total amount paid.                                                                        |
+| `notes`                   | string           | Client-entered notes.                                                                                      |
+| `forms`                   | array            | Intake form answers. Each object contains `id`, `fieldID`, `name`, `value`, `isMultiple`, and `sortOrder`. |
+| `noShow`                  | boolean          | Present on canceled payloads to differentiate no-shows from standard cancellations.                        |
 
 `GET /appointments` supports pagination, so expect arrays even when a single appointment matches the filters.
 
@@ -104,19 +104,19 @@ Returns a single appointment object with the same fields described under `GET /a
 
 Create an appointment as a client booking. Supported JSON body keys:
 
-| Field | Required | Description |
-| --- | --- | --- |
-| `datetime` | ✔ | ISO datetime in the business timezone. |
-| `appointmentTypeID` | ✔ | Appointment type to schedule. |
-| `firstName` / `lastName` | ✔ | Client name. |
-| `email` | ✔ | Client email. |
-| `phone` | ✔ | Client phone number (API rejects payloads without it). |
-| `calendarID` | ✖ | Force placement on a specific calendar. |
-| `notes` | ✖ | Client notes. |
-| `fields` | ✖ | Array of `{fieldID, value}` form answers. |
-| `certificate` / `packageID` / `coupon` | ✖ | Redemption artifacts. |
-| `formID` | ✖ | Explicit intake form to attach. |
-| `smsOptIn` | ✖ | Whether the client opted into SMS reminders. |
+| Field                                  | Required | Description                                            |
+| -------------------------------------- | -------- | ------------------------------------------------------ |
+| `datetime`                             | ✔        | ISO datetime in the business timezone.                 |
+| `appointmentTypeID`                    | ✔        | Appointment type to schedule.                          |
+| `firstName` / `lastName`               | ✔        | Client name.                                           |
+| `email`                                | ✔        | Client email.                                          |
+| `phone`                                | ✔        | Client phone number (API rejects payloads without it). |
+| `calendarID`                           | ✖        | Force placement on a specific calendar.                |
+| `notes`                                | ✖        | Client notes.                                          |
+| `fields`                               | ✖        | Array of `{fieldID, value}` form answers.              |
+| `certificate` / `packageID` / `coupon` | ✖        | Redemption artifacts.                                  |
+| `formID`                               | ✖        | Explicit intake form to attach.                        |
+| `smsOptIn`                             | ✖        | Whether the client opted into SMS reminders.           |
 
 When double-booking protection blocks the slot, the API returns HTTP 422 with `time_unavailable`. For admin-side scheduling that can override certain restrictions, append `?admin=true` to the endpoint. Append `?noEmail=true` whenever you need to suppress the confirmation email/SMS blast for this booking while still creating the appointment.
 
@@ -137,11 +137,11 @@ Returns the created appointment object, identical in shape to `GET /appointments
 
 Update mutable fields for an existing appointment.
 
-| Field | Description |
-| --- | --- |
-| `firstName`, `lastName`, `email`, `phone`, `notes` | Update client and note fields. |
-| `fields` | Replace form answers array. |
-| `calendarID` | Move to a new calendar (same start time). |
+| Field                                              | Description                               |
+| -------------------------------------------------- | ----------------------------------------- |
+| `firstName`, `lastName`, `email`, `phone`, `notes` | Update client and note fields.            |
+| `fields`                                           | Replace form answers array.               |
+| `calendarID`                                       | Move to a new calendar (same start time). |
 
 #### Response
 
@@ -159,9 +159,9 @@ Returns the updated appointment object.
 
 Cancel or mark a no-show.
 
-| Field | Description |
-| --- | --- |
-| `noShow` | Boolean to mark as no-show. |
+| Field        | Description                                   |
+| ------------ | --------------------------------------------- |
+| `noShow`     | Boolean to mark as no-show.                   |
 | `cancelNote` | Internal note explaining why it was canceled. |
 
 **Query parameters.** `admin=true` forces the cancel to run with admin privileges (same semantics as other endpoints), and `noEmail=true` skips Acuity’s cancellation emails/SMS entirely so you can perform internal-only cancellations.
@@ -180,10 +180,10 @@ Returns the canceled appointment object (same schema) with `canceled=true` and, 
 
 Move the appointment to a new time.
 
-| Field | Description |
-| --- | --- |
-| `datetime` | Required ISO datetime for the new slot. |
-| `calendarID` | Optional calendar override. |
+| Field        | Description                             |
+| ------------ | --------------------------------------- |
+| `datetime`   | Required ISO datetime for the new slot. |
+| `calendarID` | Optional calendar override.             |
 
 **Query parameters.** `admin=true` performs the reschedule with admin privileges, and `noEmail=true` suppresses reschedule notices so you can shuffle a booking without notifying the client (pair this with internal outreach if needed).
 
@@ -204,22 +204,22 @@ Returns every appointment type configured in the account; there are no query par
 
 #### Response
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `id` | integer | Unique appointment type ID. |
-| `active` | boolean | `false` indicates the type has been deleted or deactivated. |
-| `name` | string | Display name of the type. |
-| `description` | string | Long-form description (often `null`). |
-| `duration` | integer | Length of the appointment in minutes. |
-| `price` | string | Price quoted in the account’s currency. |
-| `category` | string | Category label. |
-| `color` | string | Hex color used in Acuity. |
-| `private` | boolean | `true` when the type is only visible to admins/direct links. |
-| `type` | string | One of `service`, `class`, or `series`. |
-| `classSize` | integer/null | For classes/series, the maximum capacity; `null` for services. |
-| `paddingAfter` | integer | Minutes of enforced padding after each booking. |
-| `paddingBefore` | integer | Minutes of enforced padding before each booking. |
-| `calendarIDs` | integer[] | IDs of calendars that offer the type. |
+| Field           | Type         | Description                                                    |
+| --------------- | ------------ | -------------------------------------------------------------- |
+| `id`            | integer      | Unique appointment type ID.                                    |
+| `active`        | boolean      | `false` indicates the type has been deleted or deactivated.    |
+| `name`          | string       | Display name of the type.                                      |
+| `description`   | string       | Long-form description (often `null`).                          |
+| `duration`      | integer      | Length of the appointment in minutes.                          |
+| `price`         | string       | Price quoted in the account’s currency.                        |
+| `category`      | string       | Category label.                                                |
+| `color`         | string       | Hex color used in Acuity.                                      |
+| `private`       | boolean      | `true` when the type is only visible to admins/direct links.   |
+| `type`          | string       | One of `service`, `class`, or `series`.                        |
+| `classSize`     | integer/null | For classes/series, the maximum capacity; `null` for services. |
+| `paddingAfter`  | integer      | Minutes of enforced padding after each booking.                |
+| `paddingBefore` | integer      | Minutes of enforced padding before each booking.               |
+| `calendarIDs`   | integer[]    | IDs of calendars that offer the type.                          |
 
 ## Availability
 
@@ -229,12 +229,12 @@ Recommended flow: fetch available dates, fetch times for a date, optionally vali
 
 Returns dates with at least one open slot.
 
-| Query | Required | Description |
-| --- | --- | --- |
-| `month` | ✔ | Month in `YYYY-MM`. |
-| `appointmentTypeID` | ✔ | Appointment type to evaluate. |
-| `calendarID` | ✖ | Limit to a calendar. |
-| `timezone` | ✖ | Force timezone. |
+| Query               | Required | Description                   |
+| ------------------- | -------- | ----------------------------- |
+| `month`             | ✔        | Month in `YYYY-MM`.           |
+| `appointmentTypeID` | ✔        | Appointment type to evaluate. |
+| `calendarID`        | ✖        | Limit to a calendar.          |
+| `timezone`          | ✖        | Force timezone.               |
 
 #### Response
 
@@ -252,13 +252,13 @@ Returns an array of lightweight objects containing only a `date` key (e.g., `{ "
 
 Returns precise start times for a date.
 
-| Query | Required | Description |
-| --- | --- | --- |
-| `date` | ✔ | `YYYY-MM-DD`, must come from `/availability/dates`. |
-| `appointmentTypeID` | ✔ | Appointment type. |
-| `calendarID` | ✖ | Restrict to a calendar. |
-| `timezone` | ✖ | Force timezone for readability. |
-| `ignoreAppointmentIDs` | ✖ | Comma-separated appointment IDs to ignore (helps keep reschedule candidates visible). |
+| Query                  | Required | Description                                                                           |
+| ---------------------- | -------- | ------------------------------------------------------------------------------------- |
+| `date`                 | ✔        | `YYYY-MM-DD`, must come from `/availability/dates`.                                   |
+| `appointmentTypeID`    | ✔        | Appointment type.                                                                     |
+| `calendarID`           | ✖        | Restrict to a calendar.                                                               |
+| `timezone`             | ✖        | Force timezone for readability.                                                       |
+| `ignoreAppointmentIDs` | ✖        | Comma-separated appointment IDs to ignore (helps keep reschedule candidates visible). |
 
 Each returned slot object only exposes a `time` field in ISO 8601 format (with the timezone offset baked in). Use `/availability/check-times` when you need metadata such as timezone labels, calendar names, or pricing.
 
@@ -285,14 +285,14 @@ Example payload:
 
 Validates a proposed slot and returns canonical slot metadata.
 
-| Field | Required | Description |
-| --- | --- | --- |
-| `datetime` | ✔ | ISO datetime being checked. |
-| `appointmentTypeID` | ✔ | Appointment type. |
-| `calendarID` | ✖ | Restrict to calendar. |
-| `timezone` | ✖ | Timezone for rendering. |
-| `duration` | ✖ | Override duration in minutes. |
-| `price` | ✖ | Override price for admin bookings. |
+| Field               | Required | Description                        |
+| ------------------- | -------- | ---------------------------------- |
+| `datetime`          | ✔        | ISO datetime being checked.        |
+| `appointmentTypeID` | ✔        | Appointment type.                  |
+| `calendarID`        | ✖        | Restrict to calendar.              |
+| `timezone`          | ✖        | Timezone for rendering.            |
+| `duration`          | ✖        | Override duration in minutes.      |
+| `price`             | ✖        | Override price for admin bookings. |
 
 The response echoes normalized `datetime`, `calendarID`, pricing, duration, package/certificate references, and an `available` boolean you can rely on before calling `POST /appointments`.
 
@@ -300,21 +300,21 @@ The response echoes normalized `datetime`, `calendarID`, pricing, duration, pack
 
 Returns a single slot verification object:
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `datetime` | ISO 8601 string | Canonical slot start in the business timezone. |
-| `timezone` | string | IANA timezone that was evaluated. |
-| `appointmentTypeID` | integer | Appointment type validated. |
-| `calendarID` | integer | Calendar the slot maps to. |
-| `available` | boolean | Whether the slot can be booked. |
-| `multipleClientsAllowed` | boolean | True when the slot supports group bookings. |
-| `duration` | integer | Duration in minutes that will be reserved. |
-| `price` / `deposit` | string | Price the client will see and any required deposit. |
-| `calendar` / `appointmentType` | string | Human-readable calendar and appointment type labels. |
-| `firstName` / `lastName` / `email` / `phone` | string | Echoes any client details provided for validation (often `null`). |
-| `location` | string | Location tied to the appointment type, if any. |
-| `certificate` / `package` | object | Applied redemption artifacts; `null` when none supplied. |
-| `addons`, `labels`, `forms` | arrays | Detailed metadata to reuse when posting the appointment. |
+| Field                                        | Type            | Description                                                       |
+| -------------------------------------------- | --------------- | ----------------------------------------------------------------- |
+| `datetime`                                   | ISO 8601 string | Canonical slot start in the business timezone.                    |
+| `timezone`                                   | string          | IANA timezone that was evaluated.                                 |
+| `appointmentTypeID`                          | integer         | Appointment type validated.                                       |
+| `calendarID`                                 | integer         | Calendar the slot maps to.                                        |
+| `available`                                  | boolean         | Whether the slot can be booked.                                   |
+| `multipleClientsAllowed`                     | boolean         | True when the slot supports group bookings.                       |
+| `duration`                                   | integer         | Duration in minutes that will be reserved.                        |
+| `price` / `deposit`                          | string          | Price the client will see and any required deposit.               |
+| `calendar` / `appointmentType`               | string          | Human-readable calendar and appointment type labels.              |
+| `firstName` / `lastName` / `email` / `phone` | string          | Echoes any client details provided for validation (often `null`). |
+| `location`                                   | string          | Location tied to the appointment type, if any.                    |
+| `certificate` / `package`                    | object          | Applied redemption artifacts; `null` when none supplied.          |
+| `addons`, `labels`, `forms`                  | arrays          | Detailed metadata to reuse when posting the appointment.          |
 
 #### Errors
 
@@ -336,16 +336,16 @@ Returns every calendar the authenticated user can access. There are no query par
 
 Array of calendar objects:
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `id` | integer | Identifier used as `calendarID` elsewhere in the API. |
-| `name` | string | Human-readable calendar label shown to clients. |
-| `timezone` | string | IANA timezone tied to the calendar's availability window. |
-| `email` | string | Notification address used for confirmations. |
-| `replyTo` | string | Reply-To email configured for outbound client emails. |
-| `description` | string | Optional blurb shown on the booking page. |
-| `location` | string | Free-form location text for the appointment. |
-| `image` / `thumbnail` | string | CDN URLs for the calendar avatar displayed in client flows. |
+| Field                 | Type    | Description                                                 |
+| --------------------- | ------- | ----------------------------------------------------------- |
+| `id`                  | integer | Identifier used as `calendarID` elsewhere in the API.       |
+| `name`                | string  | Human-readable calendar label shown to clients.             |
+| `timezone`            | string  | IANA timezone tied to the calendar's availability window.   |
+| `email`               | string  | Notification address used for confirmations.                |
+| `replyTo`             | string  | Reply-To email configured for outbound client emails.       |
+| `description`         | string  | Optional blurb shown on the booking page.                   |
+| `location`            | string  | Free-form location text for the appointment.                |
+| `image` / `thumbnail` | string  | CDN URLs for the calendar avatar displayed in client flows. |
 
 Additional account-specific metadata (color, scheduling URLs, form references, etc.) may appear as extra keys; treat unknown keys as pass-through values.
 
@@ -358,6 +358,7 @@ Additional account-specific metadata (color, scheduling URLs, form references, e
 ## Static Webhooks
 
 Static webhooks are configured under the Acuity dashboard and send `application/x-www-form-urlencoded` payloads that always include `action` plus identifiers such as `id`, `calendarID`, and `appointmentTypeID` for appointment-related events. The `action` field arrives as the full event name (e.g., `appointment.scheduled`, `appointment.rescheduled`, `appointment.canceled`, `appointment.changed`). The SDK forwards that `action` verbatim on the parsed event—there is no extra `type` or `scope` field. (Source: https://developers.acuityscheduling.com/docs/webhooks#static-webhooks)
+
 - Each delivery contains an `X-Acuity-Signature` header with a Base64-encoded HMAC-SHA256 hash of the exact request body computed with your API key as the secret. Always compute the HMAC over the raw bytes before parsing and compare it to the header to reject tampered payloads. (Source: https://developers.acuityscheduling.com/docs/webhooks#verifying-webhooks)
 - The SDK exposes `createWebhookHandler`, which binds your webhook secret and lets you call the returned function with `(body, headers, handler)` for each request. Signature verification is on by default but can be disabled for development, and parsing/verification utilities (`parseWebhookEvent`, `verifyWebhookSignature`) are exported separately when you want to orchestrate the steps yourself. Dynamic webhooks handle the same appointment events but are configured via the REST helpers below.
 

@@ -117,9 +117,7 @@ export class HttpClient {
   }
 
   private buildAuthHeader(): string {
-    const credentials = Buffer.from(`${this.userId}:${this.apiKey}`).toString(
-      "base64",
-    );
+    const credentials = Buffer.from(`${this.userId}:${this.apiKey}`).toString("base64");
     return `Basic ${credentials}`;
   }
 
@@ -138,8 +136,7 @@ export class HttpClient {
 
   private createError(status: number, payload: unknown): AcuityError {
     const normalized = (payload ?? {}) as AcuityErrorResponse;
-    const code =
-      this.normalizeErrorCode(normalized.error) ?? this.mapStatusToCode(status);
+    const code = this.normalizeErrorCode(normalized.error) ?? this.mapStatusToCode(status);
     const message = normalized.message;
     const details = { status, code, message, payload };
 
@@ -180,9 +177,7 @@ export class HttpClient {
       case 429:
         return AcuityErrorCode.TooManyRequests;
       default:
-        return status >= 500
-          ? AcuityErrorCode.ServerError
-          : AcuityErrorCode.UnknownError;
+        return status >= 500 ? AcuityErrorCode.ServerError : AcuityErrorCode.UnknownError;
     }
   }
 

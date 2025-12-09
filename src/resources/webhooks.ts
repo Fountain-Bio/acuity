@@ -1,8 +1,5 @@
 import { HttpClient } from "../http.js";
-import type {
-  CreateWebhookSubscriptionPayload,
-  WebhookSubscription,
-} from "../types.js";
+import type { CreateWebhookSubscriptionPayload, WebhookSubscription } from "../types.js";
 
 export class WebhooksResource {
   constructor(private readonly http: HttpClient) {}
@@ -11,9 +8,7 @@ export class WebhooksResource {
     return this.http.request<WebhookSubscription[]>("GET", "/webhooks");
   }
 
-  create(
-    payload: CreateWebhookSubscriptionPayload,
-  ): Promise<WebhookSubscription> {
+  create(payload: CreateWebhookSubscriptionPayload): Promise<WebhookSubscription> {
     return this.http.request<WebhookSubscription>("POST", "/webhooks", {
       body: payload,
     });

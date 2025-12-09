@@ -115,10 +115,7 @@ export class AppointmentsResource {
     );
   }
 
-  private mergeQueryOptions<T extends object>(
-    defaults?: T,
-    overrides?: T,
-  ): T | undefined {
+  private mergeQueryOptions<T extends object>(defaults?: T, overrides?: T): T | undefined {
     if (!defaults && !overrides) {
       return undefined;
     }

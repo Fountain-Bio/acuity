@@ -77,10 +77,7 @@ function parseEnvNumber(name: string): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-function parseNumberList(
-  value: unknown,
-  errorMessage: string,
-): number[] | undefined {
+function parseNumberList(value: unknown, errorMessage: string): number[] | undefined {
   if (value === undefined) return undefined;
 
   const inputs = Array.isArray(value) ? value : [value];
@@ -169,8 +166,7 @@ async function main(): Promise<void> {
     })
     .option("timeout-ms", {
       type: "number",
-      describe:
-        "Request timeout applied to each call in milliseconds (or ACUITY_TIMEOUT_MS).",
+      describe: "Request timeout applied to each call in milliseconds (or ACUITY_TIMEOUT_MS).",
     })
     .option("compact", {
       type: "boolean",
@@ -288,9 +284,7 @@ async function main(): Promise<void> {
                 describe: "Include historical form answers in the response.",
               }),
           async (
-            argv: ArgumentsCamelCase<
-              GlobalArgs & { id: number; pastFormAnswers?: boolean }
-            >,
+            argv: ArgumentsCamelCase<GlobalArgs & { id: number; pastFormAnswers?: boolean }>,
           ) => {
             const client = createClient(argv);
             const appointment = await client.appointments.get(argv.id, {
@@ -337,9 +331,7 @@ async function main(): Promise<void> {
                 type: "string",
                 describe: "IANA timezone for display fields.",
               }),
-          async (
-            argv: ArgumentsCamelCase<GlobalArgs & AvailabilityDatesArgs>,
-          ) => {
+          async (argv: ArgumentsCamelCase<GlobalArgs & AvailabilityDatesArgs>) => {
             const client = createClient(argv);
             const dates = await client.availability.dates({
               month: argv.month,
@@ -376,12 +368,9 @@ async function main(): Promise<void> {
               .option("ignore", {
                 type: "string",
                 array: true,
-                describe:
-                  "Comma-separated appointment IDs to ignore (useful when rescheduling).",
+                describe: "Comma-separated appointment IDs to ignore (useful when rescheduling).",
               }),
-          async (
-            argv: ArgumentsCamelCase<GlobalArgs & AvailabilityTimesArgs>,
-          ) => {
+          async (argv: ArgumentsCamelCase<GlobalArgs & AvailabilityTimesArgs>) => {
             const client = createClient(argv);
             const ignoreAppointmentIds = parseNumberList(
               argv.ignore,
@@ -405,8 +394,7 @@ async function main(): Promise<void> {
               .option("datetime", {
                 type: "string",
                 demandOption: true,
-                describe:
-                  "ISO datetime string to validate (e.g., 2025-01-15T14:30:00-05:00).",
+                describe: "ISO datetime string to validate (e.g., 2025-01-15T14:30:00-05:00).",
               })
               .option("appointment-type-id", {
                 type: "number",
@@ -429,9 +417,7 @@ async function main(): Promise<void> {
                 type: "number",
                 describe: "Override price used for availability calculation.",
               }),
-          async (
-            argv: ArgumentsCamelCase<GlobalArgs & AvailabilityCheckArgs>,
-          ) => {
+          async (argv: ArgumentsCamelCase<GlobalArgs & AvailabilityCheckArgs>) => {
             const client = createClient(argv);
             const result = await client.availability.checkTimes({
               datetime: argv.datetime,
@@ -457,69 +443,65 @@ async function main(): Promise<void> {
         printJson(calendars, argv.compact);
       },
     )
-    .command(
-      "webhooks",
-      "Manage dynamic webhook subscriptions",
-      (yargs: Argv) =>
-        yargs
-          .command(
-            "list",
-            "List dynamic webhook subscriptions",
-            (yargs: Argv) => yargs,
-            async (argv: ArgumentsCamelCase<GlobalArgs>) => {
-              const client = createClient(argv);
-              const hooks = await client.webhooks.list();
-              printJson(hooks, argv.compact);
-            },
-          )
-          .command(
-            "create",
-            "Create a dynamic webhook subscription",
-            (yargs: Argv) =>
-              yargs
-                .option("event", {
-                  type: "string",
-                  choices: [
-                    "appointment.scheduled",
-                    "appointment.rescheduled",
-                    "appointment.canceled",
-                    "appointment.changed",
-                  ] as const,
-                  demandOption: true,
-                  describe: "Event name to subscribe to.",
-                })
-                .option("target", {
-                  type: "string",
-                  demandOption: true,
-                  describe:
-                    "HTTPS endpoint that should receive webhook deliveries.",
-                }),
-            async (argv: ArgumentsCamelCase<WebhookCreateArgs>) => {
-              const client = createClient(argv);
-              const hook = await client.webhooks.create({
-                event: argv.event,
-                target: argv.target,
-              });
-              printJson(hook, argv.compact);
-            },
-          )
-          .command(
-            "delete <id>",
-            "Delete a dynamic webhook subscription",
-            (yargs: Argv) =>
-              yargs.positional("id", {
-                type: "number",
+    .command("webhooks", "Manage dynamic webhook subscriptions", (yargs: Argv) =>
+      yargs
+        .command(
+          "list",
+          "List dynamic webhook subscriptions",
+          (yargs: Argv) => yargs,
+          async (argv: ArgumentsCamelCase<GlobalArgs>) => {
+            const client = createClient(argv);
+            const hooks = await client.webhooks.list();
+            printJson(hooks, argv.compact);
+          },
+        )
+        .command(
+          "create",
+          "Create a dynamic webhook subscription",
+          (yargs: Argv) =>
+            yargs
+              .option("event", {
+                type: "string",
+                choices: [
+                  "appointment.scheduled",
+                  "appointment.rescheduled",
+                  "appointment.canceled",
+                  "appointment.changed",
+                ] as const,
                 demandOption: true,
-                describe: "Webhook ID to delete.",
+                describe: "Event name to subscribe to.",
+              })
+              .option("target", {
+                type: "string",
+                demandOption: true,
+                describe: "HTTPS endpoint that should receive webhook deliveries.",
               }),
-            async (argv: ArgumentsCamelCase<GlobalArgs & { id: number }>) => {
-              const client = createClient(argv);
-              await client.webhooks.delete(argv.id);
-              printJson({ deleted: argv.id }, argv.compact);
-            },
-          )
-          .demandCommand(1, "Choose a webhooks subcommand to run.")
-          .strict(),
+          async (argv: ArgumentsCamelCase<WebhookCreateArgs>) => {
+            const client = createClient(argv);
+            const hook = await client.webhooks.create({
+              event: argv.event,
+              target: argv.target,
+            });
+            printJson(hook, argv.compact);
+          },
+        )
+        .command(
+          "delete <id>",
+          "Delete a dynamic webhook subscription",
+          (yargs: Argv) =>
+            yargs.positional("id", {
+              type: "number",
+              demandOption: true,
+              describe: "Webhook ID to delete.",
+            }),
+          async (argv: ArgumentsCamelCase<GlobalArgs & { id: number }>) => {
+            const client = createClient(argv);
+            await client.webhooks.delete(argv.id);
+            printJson({ deleted: argv.id }, argv.compact);
+          },
+        )
+        .demandCommand(1, "Choose a webhooks subcommand to run.")
+        .strict(),
     );
 
   await parser.parseAsync();
