@@ -53,6 +53,7 @@ type AvailabilityTimesArgs = GlobalArgs & {
   appointmentTypeId: AvailabilityTimesParams["appointmentTypeID"];
   calendarId?: AvailabilityTimesParams["calendarID"];
   timezone?: AvailabilityTimesParams["timezone"];
+  ignore?: string | string[];
 };
 
 type AvailabilityCheckArgs = GlobalArgs & {
@@ -74,6 +75,29 @@ function parseEnvNumber(name: string): number | undefined {
   if (!value) return undefined;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function parseNumberList(
+  value: unknown,
+  errorMessage: string,
+): number[] | undefined {
+  if (value === undefined) return undefined;
+
+  const inputs = Array.isArray(value) ? value : [value];
+  const tokens = inputs
+    .flatMap((entry) => String(entry).split(","))
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  if (tokens.length === 0) return undefined;
+
+  const numbers = tokens.map((token) => Number(token));
+  const invalid = numbers.find((num) => !Number.isFinite(num));
+  if (invalid !== undefined) {
+    throw new Error(errorMessage);
+  }
+
+  return numbers;
 }
 
 function createClient(argv: GlobalArgs): Acuity {
@@ -344,14 +368,25 @@ async function main(): Promise<void> {
           .option("timezone", {
             type: "string",
             describe: "IANA timezone for display fields.",
+          })
+          .option("ignore", {
+            type: "string",
+            array: true,
+            describe:
+              "Comma-separated appointment IDs to ignore (useful when rescheduling).",
           }),
       async (argv: ArgumentsCamelCase<GlobalArgs & AvailabilityTimesArgs>) => {
         const client = createClient(argv);
+        const ignoreAppointmentIds = parseNumberList(
+          argv.ignore,
+          "--ignore must be a comma-separated list of numbers",
+        );
         const times = await client.availability.times({
           date: argv.date,
           appointmentTypeID: argv.appointmentTypeId,
           calendarID: argv.calendarId,
           timezone: argv.timezone,
+          ignoreAppointmentIds,
         });
         printJson(times, argv.compact);
       },
