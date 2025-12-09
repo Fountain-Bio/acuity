@@ -312,129 +312,140 @@ async function main(): Promise<void> {
         .demandCommand(1, "Choose an appointments subcommand to run.")
         .strict(),
     )
-    .command(
-      "availability dates",
-      "Show days with availability for a given month",
-      (yargs: Argv) =>
-        yargs
-          .option("month", {
-            type: "string",
-            demandOption: true,
-            describe: "Target month formatted as YYYY-MM.",
-          })
-          .option("appointment-type-id", {
-            type: "number",
-            demandOption: true,
-            describe: "Appointment type to evaluate.",
-          })
-          .option("calendar-id", {
-            type: "number",
-            describe: "Optional calendar filter.",
-          })
-          .option("timezone", {
-            type: "string",
-            describe: "IANA timezone for display fields.",
-          }),
-      async (argv: ArgumentsCamelCase<GlobalArgs & AvailabilityDatesArgs>) => {
-        const client = createClient(argv);
-        const dates = await client.availability.dates({
-          month: argv.month,
-          appointmentTypeID: argv.appointmentTypeId,
-          calendarID: argv.calendarId,
-          timezone: argv.timezone,
-        });
-        printJson(dates, argv.compact);
-      },
-    )
-    .command(
-      "availability times",
-      "List timeslots for a specific date",
-      (yargs: Argv) =>
-        yargs
-          .option("date", {
-            type: "string",
-            demandOption: true,
-            describe: "Target date formatted as YYYY-MM-DD.",
-          })
-          .option("appointment-type-id", {
-            type: "number",
-            demandOption: true,
-            describe: "Appointment type to evaluate.",
-          })
-          .option("calendar-id", {
-            type: "number",
-            describe: "Optional calendar filter.",
-          })
-          .option("timezone", {
-            type: "string",
-            describe: "IANA timezone for display fields.",
-          })
-          .option("ignore", {
-            type: "string",
-            array: true,
-            describe:
-              "Comma-separated appointment IDs to ignore (useful when rescheduling).",
-          }),
-      async (argv: ArgumentsCamelCase<GlobalArgs & AvailabilityTimesArgs>) => {
-        const client = createClient(argv);
-        const ignoreAppointmentIds = parseNumberList(
-          argv.ignore,
-          "--ignore must be a comma-separated list of numbers",
-        );
-        const times = await client.availability.times({
-          date: argv.date,
-          appointmentTypeID: argv.appointmentTypeId,
-          calendarID: argv.calendarId,
-          timezone: argv.timezone,
-          ignoreAppointmentIds,
-        });
-        printJson(times, argv.compact);
-      },
-    )
-    .command(
-      "availability check",
-      "Confirm whether a specific datetime is bookable",
-      (yargs: Argv) =>
-        yargs
-          .option("datetime", {
-            type: "string",
-            demandOption: true,
-            describe:
-              "ISO datetime string to validate (e.g., 2025-01-15T14:30:00-05:00).",
-          })
-          .option("appointment-type-id", {
-            type: "number",
-            demandOption: true,
-            describe: "Appointment type to evaluate.",
-          })
-          .option("calendar-id", {
-            type: "number",
-            describe: "Optional calendar filter.",
-          })
-          .option("timezone", {
-            type: "string",
-            describe: "IANA timezone used for the response payload.",
-          })
-          .option("duration", {
-            type: "number",
-            describe: "Override appointment duration in minutes.",
-          })
-          .option("price", {
-            type: "number",
-            describe: "Override price used for availability calculation.",
-          }),
-      async (argv: ArgumentsCamelCase<GlobalArgs & AvailabilityCheckArgs>) => {
-        const client = createClient(argv);
-        const result = await client.availability.checkTimes({
-          datetime: argv.datetime,
-          appointmentTypeID: argv.appointmentTypeId,
-          calendarID: argv.calendarId,
-          timezone: argv.timezone,
-          duration: argv.duration,
-          price: argv.price,
-        });
-        printJson(result, argv.compact);
-      },
+    .command("availability", "Inspect availability", (yargs: Argv) =>
+      yargs
+        .command(
+          "dates",
+          "Show days with availability for a given month",
+          (yargs: Argv) =>
+            yargs
+              .option("month", {
+                type: "string",
+                demandOption: true,
+                describe: "Target month formatted as YYYY-MM.",
+              })
+              .option("appointment-type-id", {
+                type: "number",
+                demandOption: true,
+                describe: "Appointment type to evaluate.",
+              })
+              .option("calendar-id", {
+                type: "number",
+                describe: "Optional calendar filter.",
+              })
+              .option("timezone", {
+                type: "string",
+                describe: "IANA timezone for display fields.",
+              }),
+          async (
+            argv: ArgumentsCamelCase<GlobalArgs & AvailabilityDatesArgs>,
+          ) => {
+            const client = createClient(argv);
+            const dates = await client.availability.dates({
+              month: argv.month,
+              appointmentTypeID: argv.appointmentTypeId,
+              calendarID: argv.calendarId,
+              timezone: argv.timezone,
+            });
+            printJson(dates, argv.compact);
+          },
+        )
+        .command(
+          "times",
+          "List timeslots for a specific date",
+          (yargs: Argv) =>
+            yargs
+              .option("date", {
+                type: "string",
+                demandOption: true,
+                describe: "Target date formatted as YYYY-MM-DD.",
+              })
+              .option("appointment-type-id", {
+                type: "number",
+                demandOption: true,
+                describe: "Appointment type to evaluate.",
+              })
+              .option("calendar-id", {
+                type: "number",
+                describe: "Optional calendar filter.",
+              })
+              .option("timezone", {
+                type: "string",
+                describe: "IANA timezone for display fields.",
+              })
+              .option("ignore", {
+                type: "string",
+                array: true,
+                describe:
+                  "Comma-separated appointment IDs to ignore (useful when rescheduling).",
+              }),
+          async (
+            argv: ArgumentsCamelCase<GlobalArgs & AvailabilityTimesArgs>,
+          ) => {
+            const client = createClient(argv);
+            const ignoreAppointmentIds = parseNumberList(
+              argv.ignore,
+              "--ignore must be a comma-separated list of numbers",
+            );
+            const times = await client.availability.times({
+              date: argv.date,
+              appointmentTypeID: argv.appointmentTypeId,
+              calendarID: argv.calendarId,
+              timezone: argv.timezone,
+              ignoreAppointmentIds,
+            });
+            printJson(times, argv.compact);
+          },
+        )
+        .command(
+          "check",
+          "Confirm whether a specific datetime is bookable",
+          (yargs: Argv) =>
+            yargs
+              .option("datetime", {
+                type: "string",
+                demandOption: true,
+                describe:
+                  "ISO datetime string to validate (e.g., 2025-01-15T14:30:00-05:00).",
+              })
+              .option("appointment-type-id", {
+                type: "number",
+                demandOption: true,
+                describe: "Appointment type to evaluate.",
+              })
+              .option("calendar-id", {
+                type: "number",
+                describe: "Optional calendar filter.",
+              })
+              .option("timezone", {
+                type: "string",
+                describe: "IANA timezone used for the response payload.",
+              })
+              .option("duration", {
+                type: "number",
+                describe: "Override appointment duration in minutes.",
+              })
+              .option("price", {
+                type: "number",
+                describe: "Override price used for availability calculation.",
+              }),
+          async (
+            argv: ArgumentsCamelCase<GlobalArgs & AvailabilityCheckArgs>,
+          ) => {
+            const client = createClient(argv);
+            const result = await client.availability.checkTimes({
+              datetime: argv.datetime,
+              appointmentTypeID: argv.appointmentTypeId,
+              calendarID: argv.calendarId,
+              timezone: argv.timezone,
+              duration: argv.duration,
+              price: argv.price,
+            });
+            printJson(result, argv.compact);
+          },
+        )
+        .demandCommand(1, "Choose an availability subcommand to run.")
+        .strict(),
     )
     .command(
       "calendars list",
