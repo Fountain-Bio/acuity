@@ -36,7 +36,7 @@
     "@types/bun": "1.3.4",
     "@types/yargs": "^17.0.35",
     "oxfmt": "^0.17.0",
-    "oxlint": "^1.33.0",
+    "oxlint": "^1.37.0",
     "oxlint-tsgolint": "^0.8.4",
     "typescript": "^5"
   },
