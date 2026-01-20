@@ -44,6 +44,29 @@ export interface ListAppointmentsParams {
   timezone?: string;
   page?: number;
   limit?: number;
+  /**
+   * Filter by client first name.
+   */
+  firstName?: string;
+  /**
+   * Filter by client last name.
+   */
+  lastName?: string;
+  /**
+   * Filter by client email address.
+   */
+  email?: string;
+  /**
+   * Filter by client phone number.
+   * Note: If using country code, the '+' character will be URL encoded automatically.
+   */
+  phone?: string;
+  /**
+   * Filter by custom intake form field values.
+   * Keys are field IDs, values are the filter strings.
+   * Example: { 1234: "Hello" } becomes ?field:1234=Hello
+   */
+  fields?: Record<number, string>;
 }
 
 export interface AppointmentFormAnswer {
