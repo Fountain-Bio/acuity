@@ -1,36 +1,58 @@
----
-description: Use Bun instead of Node.js, npm, pnpm, or vite.
-globs: "*.ts, *.tsx, *.html, *.css, *.js, *.jsx, package.json"
-alwaysApply: false
----
+# CLAUDE.md
 
-Default to using Bun instead of Node.js.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Bun automatically loads .env, so don't use dotenv.
+## Project Overview
 
-## APIs
+TypeScript SDK and CLI for the [Acuity Scheduling API](https://acuityscheduling.com/). Published as `@fountain-bio/acuity` on npm.
 
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
+## Commands
 
-## Testing
-
-Use `bun test` to run tests.
-
-```ts#index.test.ts
-import { test, expect } from "bun:test";
-
-test("hello world", () => {
-  expect(1).toBe(1);
-});
+```bash
+bun install          # Install dependencies
+bun run build        # Compile TypeScript to dist/
+bun run typecheck    # Type-check without emitting
+bun run lint         # Run oxlint with type-aware rules + oxfmt check
+bun run fmt          # Format code with oxfmt
+bun test             # Run tests (bun:test)
 ```
+
+## Bun Preferences
+
+Use Bun instead of Node.js:
+
+- `bun <file>` instead of `node` or `ts-node`
+- `bun test` instead of jest/vitest
+- `bun install` instead of npm/yarn/pnpm
+- Bun auto-loads `.env` files (no dotenv needed)
+
+## Architecture
+
+```
+src/
+├── index.ts           # Public exports
+├── client.ts          # Acuity class - main entry point
+├── http.ts            # HttpClient - handles auth, requests, errors
+├── types.ts           # All TypeScript interfaces
+├── errors.ts          # Error classes and error codes
+├── webhooks.ts        # Webhook signature verification and parsing
+├── cli.ts             # yargs-powered CLI (bunx @fountain-bio/acuity)
+└── resources/
+    ├── appointments.ts  # CRUD + list/types/reschedule/cancel
+    ├── availability.ts  # dates/times/checkTimes
+    ├── calendars.ts     # list
+    └── webhooks.ts      # list/create/delete subscriptions
+```
+
+**Client pattern**: `Acuity` class composes resource classes (`appointments`, `availability`, `calendars`, `webhooks`), each receiving a shared `HttpClient` instance.
+
+**Error hierarchy**: `AcuityError` base class with specialized subclasses (`AcuityAuthError`, `AcuityValidationError`, `AcuityTimeoutError`, etc.). Error codes are typed enums split by endpoint scope.
+
+**Webhook handling**: `createWebhookHandler()` returns a handler function for verifying signatures and parsing form-encoded payloads. Supports both dashboard-configured and API-created dynamic webhooks.
+
+## Environment Variables
+
+- `ACUITY_USER_ID` - User ID for HTTP Basic Auth
+- `ACUITY_API_KEY` - API key for HTTP Basic Auth
+- `ACUITY_BASE_URL` - Optional API base URL override
+- `ACUITY_TIMEOUT_MS` - Optional request timeout
