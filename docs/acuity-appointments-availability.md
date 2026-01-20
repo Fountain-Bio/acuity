@@ -49,6 +49,11 @@ Returns upcoming appointments for the authenticated account.
 | `excludeForms`        | boolean  | Drop form answers.                      |
 | `timezone`            | string   | Force timezone on returned fields.      |
 | `page` / `limit`      | integer  | Pagination (limit default 20, max 200). |
+| `firstName`           | string   | Filter by client first name.            |
+| `lastName`            | string   | Filter by client last name.             |
+| `email`               | string   | Filter by client email address.         |
+| `phone`               | string   | Filter by client phone number.          |
+| `field:id`            | string   | Filter by custom form field value.      |
 
 Canceled appointment payloads include the `noShow` flag that differentiates admin-marked no-shows vs. standard cancellations.
 

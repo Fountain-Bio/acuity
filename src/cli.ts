@@ -39,6 +39,11 @@ type AppointmentsListArgs = GlobalArgs & {
   timezone?: ListAppointmentsParams["timezone"];
   page?: ListAppointmentsParams["page"];
   limit?: ListAppointmentsParams["limit"];
+  firstName?: ListAppointmentsParams["firstName"];
+  lastName?: ListAppointmentsParams["lastName"];
+  email?: ListAppointmentsParams["email"];
+  phone?: ListAppointmentsParams["phone"];
+  field?: string | string[];
 };
 
 type AvailabilityDatesArgs = GlobalArgs & {
@@ -95,6 +100,31 @@ function parseNumberList(value: unknown, errorMessage: string): number[] | undef
   }
 
   return numbers;
+}
+
+function parseFieldFilters(
+  input: string | string[] | undefined,
+): Record<number, string> | undefined {
+  if (!input) return undefined;
+  const entries = Array.isArray(input) ? input : [input];
+  const result: Record<number, string> = {};
+  for (const entry of entries) {
+    const eqIndex = entry.indexOf("=");
+    if (eqIndex === -1) {
+      throw new Error(`Invalid field filter: ${entry} (expected format: id=value)`);
+    }
+    const idStr = entry.slice(0, eqIndex);
+    const value = entry.slice(eqIndex + 1);
+    if (!idStr.trim()) {
+      throw new Error(`Invalid field filter: ${entry} (field ID cannot be empty)`);
+    }
+    const id = Number(idStr);
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new Error(`Invalid field filter: ${entry} (field ID must be a positive integer)`);
+    }
+    result[id] = value;
+  }
+  return Object.keys(result).length > 0 ? result : undefined;
 }
 
 function createClient(argv: GlobalArgs): Acuity {
@@ -243,6 +273,27 @@ async function main(): Promise<void> {
               .option("limit", {
                 type: "number",
                 describe: "Page size when pagination is enabled.",
+              })
+              .option("first-name", {
+                type: "string",
+                describe: "Filter by client first name.",
+              })
+              .option("last-name", {
+                type: "string",
+                describe: "Filter by client last name.",
+              })
+              .option("email", {
+                type: "string",
+                describe: "Filter by client email address.",
+              })
+              .option("phone", {
+                type: "string",
+                describe: "Filter by client phone number.",
+              })
+              .option("field", {
+                type: "string",
+                array: true,
+                describe: "Filter by form field (format: id=value, repeatable).",
               }),
           async (argv: ArgumentsCamelCase<AppointmentsListArgs>) => {
             const client = createClient(argv);
@@ -263,6 +314,11 @@ async function main(): Promise<void> {
               timezone: argv.timezone,
               page: argv.page,
               limit: argv.limit,
+              firstName: argv.firstName,
+              lastName: argv.lastName,
+              email: argv.email,
+              phone: argv.phone,
+              fields: parseFieldFilters(argv.field),
             });
 
             printJson(appointments, argv.compact);

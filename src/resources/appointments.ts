@@ -28,11 +28,28 @@ export class AppointmentsResource {
    * Retrieves appointments that match the supplied filters (calendar, client, status, etc.).
    */
   list(params?: ListAppointmentsParams): Promise<Appointment[]> {
-    return this.http.request<Appointment[], ListAppointmentsParams | undefined>(
+    const query = this.expandFieldFilters(params);
+    return this.http.request<Appointment[], Record<string, unknown> | undefined>(
       "GET",
       "/appointments",
-      { query: params },
+      { query },
     );
+  }
+
+  /**
+   * Expands the `fields` object into `field:id` query parameters for the Acuity API.
+   */
+  private expandFieldFilters(params?: ListAppointmentsParams): Record<string, unknown> | undefined {
+    if (!params) return undefined;
+    const { fields, ...rest } = params;
+    if (!fields || Object.keys(fields).length === 0) {
+      return rest as Record<string, unknown>;
+    }
+    const expanded: Record<string, unknown> = { ...rest };
+    for (const [fieldId, value] of Object.entries(fields)) {
+      expanded[`field:${fieldId}`] = value;
+    }
+    return expanded;
   }
 
   /**
