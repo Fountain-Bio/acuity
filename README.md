@@ -1,10 +1,14 @@
 # acuity-sdk
 
+[![npm version](https://img.shields.io/npm/v/%40fountain-bio%2Facuity)](https://www.npmjs.com/package/@fountain-bio/acuity)
+
 To install dependencies:
 
 ```bash
 bun install
 ```
+
+For npm publishing from CI, use npm Trusted Publishing (GitHub Actions OIDC) for this repository/workflow. No `NPM_TOKEN` secret is required.
 
 ## CLI
 
