@@ -68,7 +68,7 @@ export type WebhookHandlerFn = (
 ) => Promise<WebhookHandleResult>;
 
 export function verifyWebhookSignature(params: VerifyWebhookSignatureParams): string {
-  const secret = params.secret?.trim();
+  const secret = params.secret.trim();
   if (!secret) {
     throw new AcuityWebhookError({
       code: "invalid_payload",
@@ -228,7 +228,7 @@ function resolveSignature(
   headers: HeaderBag | undefined,
   headerName?: string,
 ): string | undefined {
-  if (signature && signature.trim()) {
+  if (signature?.trim()) {
     return signature.trim();
   }
 
@@ -260,16 +260,7 @@ function normalizeHeaderValue(value: string | string[] | undefined | null): stri
 }
 
 function isHeaderGetter(value: HeaderBag): value is HeaderGetter {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  if (!("get" in value)) {
-    return false;
-  }
-
-  const candidate = value as { get?: unknown };
-  return typeof candidate.get === "function";
+  return "get" in value && typeof (value as { get?: unknown }).get === "function";
 }
 
 function normalizeBody(body: WebhookBody): Uint8Array {

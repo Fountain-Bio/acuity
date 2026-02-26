@@ -11,9 +11,10 @@
   },
   "rules": {
     "typescript/no-explicit-any": "error",
+    "typescript/prefer-readonly-parameter-types": "off",
     "import/extensions": [
       "error",
-      "always",
+      "ignorePackages",
       {
         "js": "always",
         "ts": "never",
@@ -26,6 +27,12 @@
       "files": ["*.test.ts", "*.spec.ts"],
       "rules": {
         "typescript/no-explicit-any": "off"
+      }
+    },
+    {
+      "files": ["src/cli.ts"],
+      "rules": {
+        "no-shadow": "off"
       }
     }
   ]

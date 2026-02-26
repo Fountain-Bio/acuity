@@ -1,6 +1,6 @@
 export { Acuity } from "./client.js";
 export * from "./errors.js";
-export * from "./types.js";
+export type * from "./types.js";
 export {
   createWebhookHandler,
   parseWebhookEvent,

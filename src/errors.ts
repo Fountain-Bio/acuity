@@ -93,7 +93,7 @@ export class AcuityError extends Error {
     this.status = status;
     this.code = code;
     this.payload = payload;
-    Error.captureStackTrace?.(this, this.constructor);
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 
@@ -217,6 +217,6 @@ export class AcuityWebhookError extends Error {
     super(message ?? WEBHOOK_ERROR_MESSAGES[code], { cause });
     this.name = "AcuityWebhookError";
     this.code = code;
-    Error.captureStackTrace?.(this, this.constructor);
+    Error.captureStackTrace(this, this.constructor);
   }
 }
