@@ -170,7 +170,7 @@ async function main(): Promise<void> {
     .strict()
     .help()
     .fail((msg, err, yargs) => {
-      const missingCommand = msg?.includes("Choose a subcommand to run.");
+      const missingCommand = msg.includes("Choose a subcommand to run.");
       yargs.showHelp();
       if (!missingCommand) {
         if (msg) {
