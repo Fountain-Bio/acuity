@@ -1,8 +1,11 @@
 {
   "name": "@fountain-bio/acuity",
   "version": "0.0.26",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fountain-Bio/acuity.git"
+  },
   "bin": {
-    "@fountain-bio/acuity": "./dist/cli.js",
     "acuity": "./dist/cli.js"
   },
   "files": [
