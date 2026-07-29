@@ -43,7 +43,7 @@ export class AppointmentsResource {
     if (!params) return undefined;
     const { fields, ...rest } = params;
     if (!fields || Object.keys(fields).length === 0) {
-      return rest as Record<string, unknown>;
+      return rest;
     }
     const expanded: Record<string, unknown> = { ...rest };
     for (const [fieldId, value] of Object.entries(fields)) {

@@ -150,6 +150,12 @@ function printJson(payload: unknown, compact = false): void {
   console.log(JSON.stringify(payload, null, space));
 }
 
+async function listAppointmentTypes(argv: ArgumentsCamelCase<GlobalArgs>): Promise<void> {
+  const client = createClient(argv);
+  const types = await client.appointments.types();
+  printJson(types, argv.compact);
+}
+
 function handleError(error: unknown): never {
   if (error instanceof AcuityError) {
     console.error(`[${error.code ?? "acuity_error"}] ${error.message}`);
@@ -353,14 +359,16 @@ async function main(): Promise<void> {
           "types",
           "List appointment types configured on the account",
           (yargs: Argv) => yargs,
-          async (argv: ArgumentsCamelCase<GlobalArgs>) => {
-            const client = createClient(argv);
-            const types = await client.appointments.types();
-            printJson(types, argv.compact);
-          },
+          listAppointmentTypes,
         )
         .demandCommand(1, "Choose an appointments subcommand to run.")
         .strict(),
+    )
+    .command(
+      "appointment-types list",
+      "List appointment types on the account",
+      (yargs: Argv) => yargs,
+      listAppointmentTypes,
     )
     .command("availability", "Inspect availability", (yargs: Argv) =>
       yargs

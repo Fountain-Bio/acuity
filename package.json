@@ -20,6 +20,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "test": "bun test",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint --type-aware && oxfmt --check",
     "fmt": "oxfmt",

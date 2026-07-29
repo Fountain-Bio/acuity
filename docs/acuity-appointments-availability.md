@@ -207,6 +207,8 @@ Returns the rescheduled appointment object reflecting the new `datetime` and `ca
 
 Returns every appointment type configured in the account; there are no query parameters, so a simple `acuity.appointments.types()` call yields the full catalog. (Source: https://developers.acuityscheduling.com/reference/appointment-types)
 
+From the CLI, run `acuity appointment-types list`. The existing `acuity appointments types` form is also supported.
+
 #### Response
 
 | Field           | Type         | Description                                                    |
