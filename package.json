@@ -1,6 +1,6 @@
 {
   "name": "@fountain-bio/acuity",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "bin": {
     "@fountain-bio/acuity": "./dist/cli.js",
     "acuity": "./dist/cli.js"
