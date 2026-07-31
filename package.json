@@ -1,6 +1,6 @@
 {
   "name": "@fountain-bio/acuity",
-  "version": "0.0.27",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Fountain-Bio/acuity.git"
