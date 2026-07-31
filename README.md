@@ -8,8 +8,6 @@ To install dependencies:
 bun install
 ```
 
-For npm publishing from CI, use npm Trusted Publishing (GitHub Actions OIDC) for this repository/workflow. No `NPM_TOKEN` secret is required.
-
 ## CLI
 
 Every release publishes a small yargs-powered CLI so you can explore the API without writing code:
