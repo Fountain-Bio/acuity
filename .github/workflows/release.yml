@@ -51,8 +51,11 @@ jobs:
 
       - name: Publish to GitHub Packages
         run: |
-          echo "@fountain-bio:registry=https://npm.pkg.github.com" >> ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+          # setup-node exports NPM_CONFIG_USERCONFIG, which points npm at a temp
+          # .npmrc instead of ~/.npmrc. `npm config set` writes to whichever file
+          # npm actually resolves, so the token lands where the publish will read it.
+          npm config set @fountain-bio:registry https://npm.pkg.github.com/
+          npm config set //npm.pkg.github.com/:_authToken "$NODE_AUTH_TOKEN"
           npm publish --registry=https://npm.pkg.github.com/
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
