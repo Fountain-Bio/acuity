@@ -69,13 +69,47 @@ export interface ListAppointmentsParams {
   fields?: Record<number, string>;
 }
 
+/**
+ * One client answer on an intake form.
+ *
+ * Acuity nests these inside `AppointmentForm.values`, so an answer is reached through the
+ * form that holds it (`appointment.forms[0].values[0]`) instead of off the appointment.
+ */
 export interface AppointmentFormAnswer {
   id: number;
+
+  /**
+   * Id of the form field this answer belongs to. Reuse it with the `fields` filter on
+   * `appointments.list` to find other appointments with the same answer.
+   */
   fieldID: number;
   name: string;
-  value: string | string[] | null;
-  isMultiple: boolean;
-  sortOrder: number;
+
+  /**
+   * Always a string. Acuity joins multi-select answers into one comma-separated string
+   * rather than sending an array.
+   */
+  value: string;
+
+  /**
+   * Numeric code for the input control the field is rendered with. Acuity documents
+   * neither the codes nor when it sends them: the key is absent on some answers and
+   * `null` on others, so do not branch on it.
+   */
+  fieldWidget?: number | null;
+}
+
+/**
+ * One intake form attached to an appointment, holding the client's answers in `values`.
+ */
+export interface AppointmentForm {
+  id: number;
+
+  /**
+   * Empty string when the form is untitled in the Acuity dashboard.
+   */
+  name: string;
+  values: AppointmentFormAnswer[];
 }
 
 export interface Appointment {
@@ -107,11 +141,27 @@ export interface Appointment {
   appointmentTypeID: number;
   calendar: string;
   calendarID: number;
-  calendarTimeZone: string;
+
+  /**
+   * IANA timezone the human-readable fields (`date`, `time`, `endTime`) are written in.
+   * Pass `timezone` on the request to change it.
+   */
+  timezone: string;
+
+  /**
+   * IANA timezone of the calendar that owns the appointment. Acuity sends this on every
+   * appointment payload but leaves it out of the published reference, so treat it as
+   * optional. It matches `timezone` unless the request asked for a different one.
+   */
+  calendarTimezone?: string;
   price?: string;
   paid?: string;
   notes?: string;
-  forms: AppointmentFormAnswer[];
+
+  /**
+   * Intake forms attached to the appointment, empty when the type collects no answers.
+   */
+  forms: AppointmentForm[];
   certificate?: unknown;
   package?: unknown;
   noShow?: boolean;

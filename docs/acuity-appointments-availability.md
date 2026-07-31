@@ -61,21 +61,22 @@ Canceled appointment payloads include the `noShow` flag that differentiates admi
 
 Returns an array of appointment objects. Each appointment includes:
 
-| Field                     | Type             | Description                                                                                                |
-| ------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
-| `id`                      | integer          | Appointment identifier.                                                                                    |
-| `firstName` / `lastName`  | string           | Client name captured at booking.                                                                           |
-| `email` / `phone`         | string           | Contact info echoed from the client form.                                                                  |
-| `date` / `endDate`        | string           | Human-readable dates (e.g., `September 5, 2014`).                                                          |
-| `time` / `endTime`        | ISO 8601 string  | Start/end timestamps localized to the calendar timezone.                                                   |
-| `type`                    | string           | Appointment type name.                                                                                     |
-| `appointmentTypeID`       | integer          | Numeric appointment type id.                                                                               |
-| `calendar` / `calendarID` | string / integer | Name and id of the calendar that owns the appointment.                                                     |
-| `calendarTimeZone`        | string           | IANA timezone of the selected calendar.                                                                    |
-| `price` / `paid`          | string           | Price quoted and total amount paid.                                                                        |
-| `notes`                   | string           | Client-entered notes.                                                                                      |
-| `forms`                   | array            | Intake form answers. Each object contains `id`, `fieldID`, `name`, `value`, `isMultiple`, and `sortOrder`. |
-| `noShow`                  | boolean          | Present on canceled payloads to differentiate no-shows from standard cancellations.                        |
+| Field                     | Type             | Description                                                                                                                                                                    |
+| ------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`                      | integer          | Appointment identifier.                                                                                                                                                        |
+| `firstName` / `lastName`  | string           | Client name captured at booking.                                                                                                                                               |
+| `email` / `phone`         | string           | Contact info echoed from the client form.                                                                                                                                      |
+| `date` / `endDate`        | string           | Human-readable dates (e.g., `September 5, 2014`).                                                                                                                              |
+| `time` / `endTime`        | ISO 8601 string  | Start/end timestamps localized to the calendar timezone.                                                                                                                       |
+| `type`                    | string           | Appointment type name.                                                                                                                                                         |
+| `appointmentTypeID`       | integer          | Numeric appointment type id.                                                                                                                                                   |
+| `calendar` / `calendarID` | string / integer | Name and id of the calendar that owns the appointment.                                                                                                                         |
+| `timezone`                | string           | IANA timezone the human-readable `date`/`time`/`endTime` fields are written in.                                                                                                |
+| `calendarTimezone`        | string           | IANA timezone of the calendar that owns the appointment. Sent on every payload, absent from Acuity's published reference.                                                      |
+| `price` / `paid`          | string           | Price quoted and total amount paid.                                                                                                                                            |
+| `notes`                   | string           | Client-entered notes.                                                                                                                                                          |
+| `forms`                   | array            | Intake forms. Each form contains `id`, `name`, and a `values` array; each answer in `values` contains `id`, `fieldID`, `name`, `value`, and sometimes a numeric `fieldWidget`. |
+| `noShow`                  | boolean          | Present on canceled payloads to differentiate no-shows from standard cancellations.                                                                                            |
 
 `GET /appointments` supports pagination, so expect arrays even when a single appointment matches the filters.
 
